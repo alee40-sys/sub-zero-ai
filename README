@@ -1,0 +1,35 @@
+# 🧊 Sub-Zero AI
+
+![Hackathon](https://img.shields.io/badge/HackUMBC-2026-blue) ![Track](https://img.shields.io/badge/Track-T._Rowe_Price-1e3a8a) ![Status](https://img.shields.io/badge/Status-Prototype_Live-success)
+
+> *Your budget, on ice — until we roast it.*
+
+**Sub-Zero AI** is a gamified financial acquisition funnel built for the T. Rowe Price sponsor track at HackUMBC 2026. It uses humor and AI to calculate the exact opportunity cost of a student's useless recurring subscriptions, dynamically visualizing how that wasted cash could grow in a T. Rowe Price mutual fund.
+
+## ⚠️ The Problem
+Traditional wealth management firms struggle to acquire Gen-Z and college-aged clients because standard financial literature is dry and unapproachable. Students are burning hundreds of dollars a year on unused subscriptions simply because they cannot visualize the compound interest they are missing out on.
+
+## 💡 The Solution
+Sub-Zero AI acts as a viral, low-cost customer acquisition funnel. 
+1. **The Hook:** Users input their monthly subscription waste (e.g., Netflix, Chegg).
+2. **The Roast:** A Gemini-powered AI savagely roasts their financial habits out loud using browser Text-to-Speech, creating a memorable, shareable moment.
+3. **The Pivot:** The app instantly renders a dynamic `Chart.js` projection showing exactly how much that exact dollar amount would yield over 20 years in the **T. Rowe Price Blue Chip Growth Fund (TRBCX)**.
+4. **The Conversion:** A simulated one-click onboarding button funnels the user directly into opening an account.
+
+## 🛠️ Tech Stack
+* **Frontend UI:** HTML5, Tailwind CSS (via CDN)
+* **Data Visualization:** Chart.js 
+* **Backend Brain:** Google Gemini 3.8 Flash REST API
+* **Voice Synthesis:** Web Speech API (`window.speechSynthesis`)
+* **Architecture:** Zero-dependency, single-file deployment optimized for instant load times.
+
+## 🚀 How to Run Locally
+Because this project uses strict single-file architecture to avoid package bloat, it can be tested instantly.
+1. Clone this repository.
+2. Open `index.html` in **VS Code**.
+3. Install the **Live Server** extension.
+4. Click **Go Live** to launch the dashboard locally. 
+*(Note: Bypassing a local server and double-clicking the HTML file directly will cause CORS errors when attempting to fetch the Gemini API).*
+
+## 💼 Note for Recruiters
+This project was built entirely solo in under 24 hours. The architecture intentionally eschews heavy frameworks (React/Node) in favor of vanilla JS and raw REST APIs to guarantee zero-latency execution during live stage demos.
