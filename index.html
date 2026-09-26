@@ -97,13 +97,6 @@
 
   .dot-pulse { animation: dotpulse 1.2s infinite ease-in-out; }
   @keyframes dotpulse { 0%,80%,100% { opacity: 0.25; } 40% { opacity: 1; } }
-
-  .caret::after {
-    content: '▍';
-    color: #4FD8FF;
-    animation: caretBlink 1s steps(1) infinite;
-  }
-  @keyframes caretBlink { 50% { opacity: 0; } }
 </style>
 </head>
 
@@ -231,18 +224,13 @@
   </div>
 
 <script>
-  // ---------------------------------------------------------------
-  // Demo wiring only. Replace the contents of runRoast() with a real
-  // call to your backend / the Claude API and stream the reply into
-  // #roastBox in place of this canned response.
-  // ---------------------------------------------------------------
-  const roastLines = [
-    "Netflix: $15.49/mo and the last thing you finished was a documentary trailer.",
-    "Chegg: $19.95/mo to occasionally screenshot a textbook page. Bold strategy.",
-    "Spotify: fine, this one you actually use. Everyone needs one redemption arc.",
-    "Total damage: $47.43/mo — that's $569/yr frozen in subscriptions you forgot existed."
-  ];
+  // ADD YOUR KEYS HERE BEFORE DEPLOYING
+  const GEMINI_KEY = 'YOUR_GEMINI_API_KEY';
+  const ELEVENLABS_KEY = 'YOUR_ELEVENLABS_API_KEY';
+  
+  const VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb'; // "George" voice
 
+  const mockData = "Netflix ($15.49), Chegg ($19.95), Spotify ($11.99)";
   let isScanning = false;
 
   async function scanAndRoast() {
@@ -252,43 +240,54 @@
     const btn = document.getElementById('roastBtn');
     const box = document.getElementById('roastBox');
 
+    // Trigger loading animation
     btn.disabled = true;
     btn.classList.add('opacity-70', 'cursor-not-allowed');
     box.classList.remove('text-mist');
-    box.innerHTML = 'Scanning subscriptions<span class="dot-pulse">.</span><span class="dot-pulse" style="animation-delay:.15s">.</span><span class="dot-pulse" style="animation-delay:.3s">.</span>';
+    box.innerHTML = '<p class="text-frost">Judging your life choices<span class="dot-pulse">.</span><span class="dot-pulse" style="animation-delay:.15s">.</span><span class="dot-pulse" style="animation-delay:.3s">.</span></p>';
 
-    await new Promise(r => setTimeout(r, 1100));
+    try {
+      // 1. Gemini API Call
+      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: `You are a savage financial advisor. Roast this college student for wasting money on these subscriptions instead of investing in a T. Rowe Price mutual fund. Keep it to 2 short, punchy sentences. Subscriptions: ${mockData}` }] }]
+        })
+      });
+      
+      const geminiData = await geminiRes.json();
+      const roastText = geminiData.candidates[0].content.parts[0].text;
+      
+      box.innerHTML = `<p class="text-frost">${roastText}</p>`;
 
-    box.innerHTML = '';
-    for (let i = 0; i < roastLines.length; i++) {
-      const p = document.createElement('p');
-      p.className = 'text-frost mb-2 last:mb-0';
-      box.appendChild(p);
-      await typeLine(p, roastLines[i]);
-      await new Promise(r => setTimeout(r, 150));
+      // 2. ElevenLabs API Call
+      const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'xi-api-key': ELEVENLABS_KEY
+        },
+        body: JSON.stringify({
+          text: roastText,
+          model_id: "eleven_turbo_v2_5" 
+        })
+      });
+
+      // 3. Play Audio
+      const blob = await audioRes.blob();
+      const audio = new Audio(URL.createObjectURL(blob));
+      audio.play();
+
+    } catch (error) {
+      box.innerHTML = '<p class="text-burn">System Error: Check API Keys in console.</p>';
+      console.error(error);
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('opacity-70', 'cursor-not-allowed');
+      isScanning = false;
     }
-
-    btn.disabled = false;
-    btn.classList.remove('opacity-70', 'cursor-not-allowed');
-    isScanning = false;
-  }
-
-  function typeLine(el, text) {
-    return new Promise(resolve => {
-      el.classList.add('caret');
-      let i = 0;
-      const interval = setInterval(() => {
-        el.textContent = text.slice(0, i + 1);
-        i++;
-        if (i >= text.length) {
-          clearInterval(interval);
-          el.classList.remove('caret');
-          resolve();
-        }
-      }, 14);
-    });
   }
 </script>
-
 </body>
 </html>
