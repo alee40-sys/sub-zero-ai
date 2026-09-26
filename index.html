@@ -1,101 +1,294 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2870
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sub-Zero AI — Finance, Frozen &amp; Roasted</title>
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="en">\
-<head>\
-  <meta charset="UTF-8">\
-  <title>Sub-Zero AI</title>\
-  <!-- Tailwind for instant, decent-looking UI without writing CSS -->\
-  <script src="https://cdn.tailwindcss.com"></script>\
-</head>\
-<body class="bg-gray-900 text-white h-screen flex flex-col items-center justify-center p-8">\
-\
-  <div class="max-w-md w-full bg-gray-800 rounded-xl shadow-2xl p-6 text-center">\
-    <h1 class="text-3xl font-bold mb-2 text-blue-400">Sub-Zero AI</h1>\
-    <p class="text-gray-400 mb-6">T. Rowe Price Financial Roaster</p>\
-\
-    <!-- Hardcoded User Data -->\
-    <div class="bg-gray-700 rounded p-4 mb-6 text-left text-sm">\
-      <p class="font-mono text-red-400">Recurring Expenses Detected:</p>\
-      <ul class="list-disc pl-5 mt-2 font-mono">\
-        <li>Netflix Premium: $22.99/mo</li>\
-        <li>Chegg Study: $14.95/mo</li>\
-        <li>Uber One: $9.99/mo</li>\
-      </ul>\
-    </div>\
-\
-    <button id="scanBtn" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-4 rounded transition-colors">\
-      Scan & Roast Finances\
-    </button>\
-\
-    <p id="roastOutput" class="mt-6 text-lg font-semibold italic text-yellow-300 min-h-[4rem]"></p>\
-  </div>\
-\
-  <script>\
-    // Hackathon execution: Hardcode your keys here for the demo, REVOKE them on Sunday!\
-    const GEMINI_KEY = 'YOUR_GEMINI_API_KEY';\
-    const ELEVENLABS_KEY = 'YOUR_ELEVENLABS_API_KEY';\
-    const VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb'; // "George" - good authoritative voice\
-\
-    const mockData = "Netflix ($22.99), Chegg ($14.95), Uber One ($9.99)";\
-\
-    async function generateRoast() \{\
-      const outputEl = document.getElementById('roastOutput');\
-      const btnEl = document.getElementById('scanBtn');\
-      \
-      btnEl.disabled = true;\
-      btnEl.innerText = "Analyzing data...";\
-      outputEl.innerText = "Judging your life choices...";\
-      \
-      try \{\
-        // 1. Generate text with Gemini 3.8 Flash REST API\
-        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=$\{GEMINI_KEY\}`, \{\
-          method: 'POST',\
-          headers: \{ 'Content-Type': 'application/json' \},\
-          body: JSON.stringify(\{\
-            contents: [\{ parts: [\{ text: `You are a savage financial advisor. Roast this college student for wasting money on these subscriptions instead of investing in a T. Rowe Price mutual fund. Keep it to 2 short, punchy sentences. Subscriptions: $\{mockData\}` \}] \}]\
-          \})\
-        \});\
-        \
-        const geminiData = await geminiRes.json();\
-        const roastText = geminiData.candidates[0].content.parts[0].text;\
-        outputEl.innerText = `"$\{roastText\}"`;\
-\
-        btnEl.innerText = "Generating Audio...";\
-\
-        // 2. Turn text to speech with ElevenLabs Turbo model\
-        const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/$\{VOICE_ID\}`, \{\
-          method: 'POST',\
-          headers: \{\
-            'Content-Type': 'application/json',\
-            'xi-api-key': ELEVENLABS_KEY\
-          \},\
-          body: JSON.stringify(\{\
-            text: roastText,\
-            model_id: "eleven_turbo_v2_5" \
-          \})\
-        \});\
-\
-        // 3. Play the audio immediately\
-        const blob = await audioRes.blob();\
-        const audio = new Audio(URL.createObjectURL(blob));\
-        audio.play();\
-\
-      \} catch (error) \{\
-        outputEl.innerText = "API Error. Check console.";\
-        console.error(error);\
-      \} finally \{\
-        btnEl.disabled = false;\
-        btnEl.innerText = "Scan & Roast Finances";\
-      \}\
-    \}\
-\
-    document.getElementById('scanBtn').addEventListener('click', generateRoast);\
-  </script>\
-</body>\
-</html>}
+<!-- Tailwind via CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Fonts: Space Grotesk for display/numerals, Inter for body -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          void: '#080B10',
+          surface: '#0F151E',
+          surface2: '#141C27',
+          frost: '#E9F4FB',
+          mist: '#8194A8',
+          ice: '#4FD8FF',
+          ice2: '#8B7CFF',
+          burn: '#FF6A5C',
+        },
+        fontFamily: {
+          display: ['"Space Grotesk"', 'sans-serif'],
+          body: ['"Inter"', 'sans-serif'],
+        },
+        boxShadow: {
+          'ice-glow': '0 0 20px rgba(79,216,255,0.35), 0 0 60px rgba(79,216,255,0.15)',
+          'ice-glow-lg': '0 0 30px rgba(79,216,255,0.5), 0 0 90px rgba(79,216,255,0.2)',
+        },
+      }
+    }
+  }
+</script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(79,216,255,0.10), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 100% 10%, rgba(139,124,255,0.08), transparent 55%),
+      #080B10;
+  }
+
+  /* tabular numerals for anything that looks like money */
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* Frosted glass card */
+  .glass {
+    background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  /* subtle frost texture line at top of page */
+  .frost-rule {
+    background: linear-gradient(90deg, transparent, rgba(79,216,255,0.6), rgba(139,124,255,0.4), transparent);
+    height: 1px;
+  }
+
+  /* breathing glow, single deliberate animated moment */
+  @keyframes breathe {
+    0%, 100% { box-shadow: 0 0 20px rgba(79,216,255,0.35), 0 0 60px rgba(79,216,255,0.15); }
+    50% { box-shadow: 0 0 32px rgba(79,216,255,0.55), 0 0 90px rgba(79,216,255,0.28); }
+  }
+  .breathe { animation: breathe 3.6s ease-in-out infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .breathe { animation: none; }
+  }
+
+  /* scan sweep on the button */
+  .sweep::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.25) 48%, transparent 66%);
+    transform: translateX(-120%);
+    transition: none;
+  }
+  .sweep:hover::before {
+    transform: translateX(120%);
+    transition: transform 0.9s cubic-bezier(.2,.7,.3,1);
+  }
+
+  ::selection { background: rgba(79,216,255,0.3); }
+
+  /* thin scrollbar for the roast output */
+  #roastBox::-webkit-scrollbar { width: 6px; }
+  #roastBox::-webkit-scrollbar-thumb { background: rgba(79,216,255,0.25); border-radius: 4px; }
+
+  .dot-pulse { animation: dotpulse 1.2s infinite ease-in-out; }
+  @keyframes dotpulse { 0%,80%,100% { opacity: 0.25; } 40% { opacity: 1; } }
+
+  .caret::after {
+    content: '▍';
+    color: #4FD8FF;
+    animation: caretBlink 1s steps(1) infinite;
+  }
+  @keyframes caretBlink { 50% { opacity: 0; } }
+</style>
+</head>
+
+<body class="min-h-screen font-body text-frost antialiased">
+
+  <div class="frost-rule"></div>
+
+  <div class="max-w-4xl mx-auto px-6">
+
+    <!-- ============ HEADER ============ -->
+    <header class="flex items-center justify-between py-8">
+      <div class="flex items-center gap-3">
+        <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17 2V32M17 2L12 7M17 2L22 7M17 32L12 27M17 32L22 27M2 17H32M2 17L7 12M2 17L7 22M32 17L27 12M32 17L27 22M6.5 6.5L27.5 27.5M6.5 27.5L27.5 6.5" stroke="#4FD8FF" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="17" cy="17" r="4.5" fill="#080B10" stroke="#4FD8FF" stroke-width="1.6"/>
+        </svg>
+        <div>
+          <h1 class="font-display text-xl font-600 tracking-tight leading-none">Sub‑Zero AI</h1>
+          <p class="text-[11px] text-mist mt-1">Your budget, on ice — until we roast it</p>
+        </div>
+      </div>
+      <div class="hidden sm:flex items-center gap-2 text-xs text-mist">
+        <span class="w-1.5 h-1.5 rounded-full bg-ice shadow-[0_0_8px_rgba(79,216,255,0.9)]"></span>
+        Live sandbox account
+      </div>
+    </header>
+
+    <main class="pb-24">
+
+      <!-- ============ SUBSCRIPTIONS SECTION ============ -->
+      <section class="mb-10">
+        <div class="flex items-baseline justify-between mb-4">
+          <h2 class="font-display text-base font-500 text-frost">Recurring subscriptions</h2>
+          <span class="text-xs text-mist">3 active</span>
+        </div>
+
+        <div class="glass rounded-2xl overflow-hidden">
+          <!-- Netflix -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#2a0f12] flex items-center justify-center shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 3v18l4-1.2V4.2L5 3z" fill="#E5484D"/><path d="M15 3v18l4 1.2V4.2L15 3z" fill="#E5484D" opacity="0.55"/><path d="M9 4l6 15.8V4H9z" fill="#8f1e22"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-frost">Netflix</p>
+                <p class="text-xs text-mist">Renews Oct 4 · Standard w/ Ads</p>
+              </div>
+            </div>
+            <p class="num text-sm font-medium text-frost">$15.49<span class="text-mist">/mo</span></p>
+          </div>
+
+          <!-- Chegg -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#241a05] flex items-center justify-center shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v3H4V5zm0 5.5h16V19a1 1 0 01-1 1H5a1 1 0 01-1-1v-8.5z" fill="#F2A93B"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-frost">Chegg Study</p>
+                <p class="text-xs text-mist">Renews Oct 11 · Monthly plan</p>
+              </div>
+            </div>
+            <p class="num text-sm font-medium text-frost">$19.95<span class="text-mist">/mo</span></p>
+          </div>
+
+          <!-- Spotify -->
+          <div class="flex items-center justify-between px-5 py-4">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#08210f] flex items-center justify-center shrink-0">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#3ED679"/><path d="M6.5 9.8c3.2-.9 6.9-.7 9.6.9M7 13c2.6-.7 5.6-.5 7.9.8M7.5 16c2-.5 4.3-.4 6 .6" stroke="#08210f" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-frost">Spotify Premium</p>
+                <p class="text-xs text-mist">Renews Oct 18 · Individual</p>
+              </div>
+            </div>
+            <p class="num text-sm font-medium text-frost">$11.99<span class="text-mist">/mo</span></p>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="glass rounded-2xl mt-3 px-5 py-4 flex items-center justify-between">
+          <p class="text-sm text-mist">Total monthly burn</p>
+          <p class="num font-display text-2xl font-600 text-frost">$47.43<span class="text-sm text-mist font-body">/mo</span></p>
+        </div>
+      </section>
+
+      <!-- ============ SCAN & ROAST CTA ============ -->
+      <section class="flex flex-col items-center text-center py-6">
+        <p class="text-xs text-mist mb-5 max-w-xs">We'll cross-check every subscription against how often you actually use it. No mercy.</p>
+
+        <button
+          id="roastBtn"
+          onclick="scanAndRoast()"
+          class="sweep breathe relative overflow-hidden rounded-full px-10 py-5 bg-gradient-to-b from-[#123241] to-[#0c1a22] border border-ice/40 font-display text-base font-600 tracking-tight text-frost hover:border-ice/70 active:scale-[0.98] transition-all duration-150"
+        >
+          <span class="relative z-10 flex items-center gap-2.5">
+            <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-ice">
+              <path d="M13 2L4.5 13.5H11L10 22L19.5 9.5H13L13 2Z" fill="currentColor"/>
+            </svg>
+            Scan &amp; Roast Finances
+          </span>
+        </button>
+      </section>
+
+      <!-- ============ RESPONSE CONTAINER ============ -->
+      <section class="mt-8">
+        <div class="glass rounded-2xl px-6 py-5 min-h-[140px]">
+          <div class="flex items-center gap-2 mb-3 text-xs text-mist">
+            <span class="w-1.5 h-1.5 rounded-full bg-mist/50"></span>
+            Sub‑Zero verdict
+          </div>
+          <div id="roastBox" class="text-sm leading-relaxed text-mist max-h-64 overflow-y-auto">
+            Awaiting diagnostics — hit scan when you're ready to hear it.
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="pb-10 text-center">
+      <p class="text-[11px] text-mist/70">Sub‑Zero AI · Built for the 24hr hack · Not real financial advice, just cold truths</p>
+    </footer>
+
+  </div>
+
+<script>
+  // ---------------------------------------------------------------
+  // Demo wiring only. Replace the contents of runRoast() with a real
+  // call to your backend / the Claude API and stream the reply into
+  // #roastBox in place of this canned response.
+  // ---------------------------------------------------------------
+  const roastLines = [
+    "Netflix: $15.49/mo and the last thing you finished was a documentary trailer.",
+    "Chegg: $19.95/mo to occasionally screenshot a textbook page. Bold strategy.",
+    "Spotify: fine, this one you actually use. Everyone needs one redemption arc.",
+    "Total damage: $47.43/mo — that's $569/yr frozen in subscriptions you forgot existed."
+  ];
+
+  let isScanning = false;
+
+  async function scanAndRoast() {
+    if (isScanning) return;
+    isScanning = true;
+
+    const btn = document.getElementById('roastBtn');
+    const box = document.getElementById('roastBox');
+
+    btn.disabled = true;
+    btn.classList.add('opacity-70', 'cursor-not-allowed');
+    box.classList.remove('text-mist');
+    box.innerHTML = 'Scanning subscriptions<span class="dot-pulse">.</span><span class="dot-pulse" style="animation-delay:.15s">.</span><span class="dot-pulse" style="animation-delay:.3s">.</span>';
+
+    await new Promise(r => setTimeout(r, 1100));
+
+    box.innerHTML = '';
+    for (let i = 0; i < roastLines.length; i++) {
+      const p = document.createElement('p');
+      p.className = 'text-frost mb-2 last:mb-0';
+      box.appendChild(p);
+      await typeLine(p, roastLines[i]);
+      await new Promise(r => setTimeout(r, 150));
+    }
+
+    btn.disabled = false;
+    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+    isScanning = false;
+  }
+
+  function typeLine(el, text) {
+    return new Promise(resolve => {
+      el.classList.add('caret');
+      let i = 0;
+      const interval = setInterval(() => {
+        el.textContent = text.slice(0, i + 1);
+        i++;
+        if (i >= text.length) {
+          clearInterval(interval);
+          el.classList.remove('caret');
+          resolve();
+        }
+      }, 14);
+    });
+  }
+</script>
+
+</body>
+</html>
