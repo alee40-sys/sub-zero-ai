@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sub-Zero AI — Finance, Frozen &amp; Roasted</title>
+<title>Sub-Zero AI — T. Rowe Price Hackathon Build</title>
 
 <!-- Tailwind via CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Chart.js for Growth Visualization -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <!-- Fonts: Space Grotesk for display/numerals, Inter for body -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,14 +29,11 @@
           ice: '#4FD8FF',
           ice2: '#8B7CFF',
           burn: '#FF6A5C',
+          trowe: '#005596', // T. Rowe Price Blue
         },
         fontFamily: {
           display: ['"Space Grotesk"', 'sans-serif'],
           body: ['"Inter"', 'sans-serif'],
-        },
-        boxShadow: {
-          'ice-glow': '0 0 20px rgba(79,216,255,0.35), 0 0 60px rgba(79,216,255,0.15)',
-          'ice-glow-lg': '0 0 30px rgba(79,216,255,0.5), 0 0 90px rgba(79,216,255,0.2)',
         },
       }
     }
@@ -62,7 +62,6 @@
     50% { box-shadow: 0 0 32px rgba(79,216,255,0.55), 0 0 90px rgba(79,216,255,0.28); }
   }
   .breathe { animation: breathe 3.6s ease-in-out infinite; }
-  @media (prefers-reduced-motion: reduce) { .breathe { animation: none; } }
   .sweep::before {
     content: '';
     position: absolute;
@@ -76,8 +75,6 @@
     transition: transform 0.9s cubic-bezier(.2,.7,.3,1);
   }
   ::selection { background: rgba(79,216,255,0.3); }
-  #roastBox::-webkit-scrollbar { width: 6px; }
-  #roastBox::-webkit-scrollbar-thumb { background: rgba(79,216,255,0.25); border-radius: 4px; }
   .dot-pulse { animation: dotpulse 1.2s infinite ease-in-out; }
   @keyframes dotpulse { 0%,80%,100% { opacity: 0.25; } 40% { opacity: 1; } }
 </style>
@@ -87,7 +84,7 @@
 
   <div class="frost-rule"></div>
 
-  <div class="max-w-4xl mx-auto px-6">
+  <div class="max-w-3xl mx-auto px-6">
 
     <header class="flex items-center justify-between py-8">
       <div class="flex items-center gap-3">
@@ -97,19 +94,74 @@
         </svg>
         <div>
           <h1 class="font-display text-xl font-600 tracking-tight leading-none">Sub‑Zero AI</h1>
-          <p class="text-[11px] text-mist mt-1">Your budget, on ice — until we roast it</p>
+          <p class="text-[11px] text-mist mt-1">Acquisition Funnel Prototype</p>
         </div>
       </div>
       <div class="hidden sm:flex items-center gap-2 text-xs text-mist">
         <span class="w-1.5 h-1.5 rounded-full bg-ice shadow-[0_0_8px_rgba(79,216,255,0.9)]"></span>
-        HackUMBC Live Demo
+        T. Rowe Price Track
       </div>
     </header>
 
     <main class="pb-24">
 
-      <!-- ============ DYNAMIC INPUT SLIDER ============ -->
-      <section class="mb-10">
+      <!-- ============ INPUT TOGGLE ============ -->
+      <div class="flex gap-2 mb-4 bg-surface p-1 rounded-lg w-fit border border-white/10 mx-auto">
+        <button id="btnPreset" onclick="switchView('preset')" class="px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all">Common Subscriptions</button>
+        <button id="btnSlider" onclick="switchView('slider')" class="px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all">Custom Input</button>
+      </div>
+
+      <!-- ============ PRESET VIEW ============ -->
+      <section id="presetView" class="mb-10 block transition-opacity">
+        <div class="glass rounded-2xl overflow-hidden">
+          <!-- Netflix -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#2a0f12] flex items-center justify-center shrink-0">
+                <p class="text-xs font-bold text-[#E5484D]">N</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-frost">Netflix</p>
+                <p class="text-xs text-mist">Standard w/ Ads</p>
+              </div>
+            </div>
+            <p class="num text-sm font-medium text-frost">$15.49<span class="text-mist">/mo</span></p>
+          </div>
+          <!-- Chegg -->
+          <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#241a05] flex items-center justify-center shrink-0">
+                <p class="text-xs font-bold text-[#F2A93B]">C</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-frost">Chegg Study</p>
+                <p class="text-xs text-mist">Monthly plan</p>
+              </div>
+            </div>
+            <p class="num text-sm font-medium text-frost">$19.95<span class="text-mist">/mo</span></p>
+          </div>
+          <!-- Spotify -->
+          <div class="flex items-center justify-between px-5 py-4">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-xl bg-[#08210f] flex items-center justify-center shrink-0">
+                <p class="text-xs font-bold text-[#3ED679]">S</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-frost">Spotify Premium</p>
+                <p class="text-xs text-mist">Individual</p>
+              </div>
+            </div>
+            <p class="num text-sm font-medium text-frost">$11.99<span class="text-mist">/mo</span></p>
+          </div>
+        </div>
+        <div class="glass rounded-2xl mt-3 px-5 py-4 flex items-center justify-between">
+          <p class="text-sm text-mist">Total monthly burn</p>
+          <p class="num font-display text-2xl font-600 text-frost">$47.43<span class="text-sm text-mist font-body">/mo</span></p>
+        </div>
+      </section>
+
+      <!-- ============ SLIDER VIEW ============ -->
+      <section id="sliderView" class="mb-10 hidden transition-opacity">
         <div class="glass rounded-2xl p-6 border border-white/[0.06]">
           <div class="flex items-baseline justify-between mb-6">
             <div>
@@ -118,17 +170,7 @@
             </div>
             <span id="sliderValueDisplay" class="font-display text-3xl font-600 text-ice num">$50</span>
           </div>
-          
-          <input 
-            type="range" 
-            id="wasteSlider" 
-            min="0" 
-            max="200" 
-            step="5"
-            value="50" 
-            class="w-full h-2 bg-surface2 rounded-lg appearance-none cursor-pointer accent-ice"
-          >
-          
+          <input type="range" id="wasteSlider" min="0" max="200" step="5" value="50" class="w-full h-2 bg-surface2 rounded-lg appearance-none cursor-pointer accent-ice">
           <div class="flex justify-between text-xs text-mist mt-3 font-mono">
             <span>$0</span>
             <span>$200/mo</span>
@@ -138,104 +180,152 @@
 
       <!-- ============ SCAN & ROAST CTA ============ -->
       <section class="flex flex-col items-center text-center py-6">
-        <p class="text-xs text-mist mb-5 max-w-xs">We'll cross-check every subscription against how often you actually use it. No mercy.</p>
-
-        <button
-          id="roastBtn"
-          onclick="scanAndRoast()"
-          class="sweep breathe relative overflow-hidden rounded-full px-10 py-5 bg-gradient-to-b from-[#123241] to-[#0c1a22] border border-ice/40 font-display text-base font-600 tracking-tight text-frost hover:border-ice/70 active:scale-[0.98] transition-all duration-150"
-        >
+        <button id="roastBtn" onclick="scanAndRoast()" class="sweep breathe relative overflow-hidden rounded-full px-10 py-4 bg-gradient-to-b from-trowe to-[#08213b] border border-ice/40 font-display text-base font-600 tracking-tight text-frost hover:border-ice/70 active:scale-[0.98] transition-all duration-150">
           <span class="relative z-10 flex items-center gap-2.5">
-            <svg id="btnIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" class="text-ice">
-              <path d="M13 2L4.5 13.5H11L10 22L19.5 9.5H13L13 2Z" fill="currentColor"/>
-            </svg>
             Scan &amp; Roast Finances
           </span>
         </button>
       </section>
 
       <!-- ============ RESPONSE CONTAINER ============ -->
-      <section class="mt-8">
-        <div class="glass rounded-2xl px-6 py-5 min-h-[140px]">
+      <section class="mt-4">
+        <div class="glass rounded-2xl px-6 py-5 min-h-[100px]">
           <div class="flex items-center gap-2 mb-3 text-xs text-mist">
             <span class="w-1.5 h-1.5 rounded-full bg-mist/50"></span>
-            Sub‑Zero verdict
+            Sub‑Zero AI Verdict
           </div>
-          <div id="roastBox" class="text-sm leading-relaxed text-mist max-h-64 overflow-y-auto">
-            Awaiting diagnostics — hit scan when you're ready to hear it.
+          <div id="roastBox" class="text-sm leading-relaxed text-mist max-h-64 overflow-y-auto italic">
+            Waiting for financial data...
           </div>
         </div>
       </section>
 
-      <!-- ============ INVESTMENT PROJECTION CARD ============ -->
-      <section id="projectionCard" class="mt-6 hidden transition-all duration-500 opacity-0">
-        <div class="glass rounded-2xl p-6 border border-ice/30">
-          <div class="flex items-center justify-between mb-4">
+      <!-- ============ T. ROWE PRICE PROJECTION CARD ============ -->
+      <section id="projectionCard" class="mt-6 hidden opacity-0 transition-all duration-500">
+        <div class="glass rounded-2xl p-6 border border-trowe/50 shadow-[0_0_30px_rgba(0,85,150,0.15)]">
+          <div class="flex items-start justify-between mb-2">
             <div>
-              <h3 class="font-display text-lg font-600 text-ice">T. Rowe Price Growth Pivot</h3>
-              <p id="projSubtitle" class="text-xs text-mist">Redirecting your burn into an index fund</p>
+              <h3 class="font-display text-xl font-600 text-frost">T. Rowe Price Blue Chip Growth Fund</h3>
+              <p class="text-xs text-mist mt-1">Ticker: <strong>TRBCX</strong> | Redirecting <span id="projSubtitleText">$0</span>/mo into the market.</p>
             </div>
-            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded bg-ice/10 text-ice border border-ice/20">8% Est. Return</span>
+            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded bg-trowe/20 text-[#4FD8FF] border border-trowe/40">8% Est. APY</span>
           </div>
 
-          <div class="grid grid-cols-3 gap-3 text-center mt-6">
+          <!-- Chart.js Canvas -->
+          <div class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48">
+            <canvas id="growthChart"></canvas>
+          </div>
+
+          <!-- Data Points -->
+          <div class="grid grid-cols-3 gap-3 text-center mt-4 mb-6">
             <div class="bg-surface p-3 rounded-xl border border-white/5">
               <p class="text-xs text-mist mb-1">5 Years</p>
               <p id="proj5" class="font-display text-lg font-bold text-frost num">$0</p>
             </div>
-            <div class="bg-surface p-3 rounded-xl border border-ice/20 relative overflow-hidden">
-              <div class="absolute inset-0 bg-ice/5"></div>
-              <p class="text-xs text-mist mb-1 relative z-10">10 Years</p>
-              <p id="proj10" class="font-display text-xl font-bold text-ice num relative z-10">$0</p>
+            <div class="bg-surface p-3 rounded-xl border border-trowe/40 relative overflow-hidden">
+              <div class="absolute inset-0 bg-trowe/10"></div>
+              <p class="text-xs text-[#4FD8FF] mb-1 relative z-10">10 Years</p>
+              <p id="proj10" class="font-display text-xl font-bold text-white num relative z-10">$0</p>
             </div>
             <div class="bg-surface p-3 rounded-xl border border-white/5">
               <p class="text-xs text-mist mb-1">20 Years</p>
               <p id="proj20" class="font-display text-lg font-bold text-frost num">$0</p>
             </div>
           </div>
+
+          <!-- Simulated Action Button -->
+          <button id="investBtn" onclick="simulateInvestment()" class="w-full py-3 rounded-lg bg-trowe hover:bg-blue-600 text-white font-semibold text-sm transition-colors shadow-lg">
+            Open Account with <span id="btnInvestAmount">$0</span>
+          </button>
+          
+          <!-- Contact Info Reveal -->
+          <div id="contactReveal" class="hidden mt-4 text-center p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+            <p class="text-sm text-green-400 font-semibold mb-1">✓ Application Initialized</p>
+            <p class="text-xs text-mist">Redirecting to T. Rowe Price Student Onboarding portal...</p>
+            <p class="text-[10px] text-mist/60 mt-3 border-t border-white/5 pt-2">For internship inquiries, view <a href="#" class="text-ice underline">GitHub Repo</a> or contact developer.</p>
+          </div>
+
         </div>
       </section>
 
     </main>
-
-    <footer class="pb-10 text-center">
-      <p class="text-[11px] text-mist/70">Sub‑Zero AI · Built for HackUMBC 2026 · Not real financial advice</p>
-    </footer>
-
   </div>
 
 <script>
-  // ADD YOUR KEYS HERE 
+  // ================= API KEYS =================
   const GEMINI_KEY = 'YOUR_GEMINI_API_KEY';
-  const ELEVENLABS_KEY = 'YOUR_ELEVENLABS_API_KEY';
   
-  const VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb'; // "George" voice
+  // ================= STATE & TOGGLE LOGIC =================
+  let currentMode = 'preset'; // 'preset' or 'slider'
+  let growthChart = null;
 
-  // Update slider text instantly
-  const wasteSlider = document.getElementById('wasteSlider');
-  const sliderValueDisplay = document.getElementById('sliderValueDisplay');
-  
-  wasteSlider.addEventListener('input', (e) => {
-    sliderValueDisplay.innerText = `$${e.target.value}`;
-  });
-
-  // Calculate compound interest for T. Rowe Price pitch
-  function calculateCompound(monthlyDeposit, years) {
-    const r = 0.08; 
-    const n = 12;   
-    const t = years;
-    const fv = monthlyDeposit * (((Math.pow(1 + r/n, n*t)) - 1) / (r/n));
-    return Math.round(fv).toLocaleString();
+  function switchView(view) {
+    currentMode = view;
+    document.getElementById('presetView').classList.toggle('hidden', view !== 'preset');
+    document.getElementById('sliderView').classList.toggle('hidden', view !== 'slider');
+    
+    // Update button styles
+    document.getElementById('btnPreset').className = view === 'preset' 
+      ? 'px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all' 
+      : 'px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all';
+    
+    document.getElementById('btnSlider').className = view === 'slider' 
+      ? 'px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all' 
+      : 'px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all';
   }
 
-  // Free browser voice fallback (saves ElevenLabs credits)
+  const wasteSlider = document.getElementById('wasteSlider');
+  wasteSlider.addEventListener('input', (e) => {
+    document.getElementById('sliderValueDisplay').innerText = `$${e.target.value}`;
+  });
+
+  // ================= MATH & CHART LOGIC =================
+  function calculateCompound(monthlyDeposit, years) {
+    const r = 0.08, n = 12, t = years;
+    const fv = monthlyDeposit * (((Math.pow(1 + r/n, n*t)) - 1) / (r/n));
+    return fv;
+  }
+
+  function updateChart(monthlyBurn) {
+    const ctx = document.getElementById('growthChart').getContext('2d');
+    const years = [0, 5, 10, 15, 20];
+    const dataPoints = years.map(year => calculateCompound(monthlyBurn, year));
+
+    if (growthChart) growthChart.destroy();
+
+    growthChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Now', 'Year 5', 'Year 10', 'Year 15', 'Year 20'],
+        datasets: [{
+          label: 'Projected Wealth ($)',
+          data: dataPoints,
+          borderColor: '#4FD8FF',
+          backgroundColor: 'rgba(79, 216, 255, 0.1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4 
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          y: { ticks: { color: '#8194A8', callback: (val) => '$' + val.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' } },
+          x: { ticks: { color: '#8194A8' }, grid: { display: false } }
+        }
+      }
+    });
+  }
+
   function speakWithBrowser(text) {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.pitch = 0.9;
-    utterance.rate = 1.0;
+    utterance.pitch = 0.9; utterance.rate = 1.0;
     window.speechSynthesis.speak(utterance);
   }
 
+  // ================= MAIN EXECUTION =================
   let isScanning = false;
 
   async function scanAndRoast() {
@@ -244,75 +334,67 @@
 
     const btn = document.getElementById('roastBtn');
     const box = document.getElementById('roastBox');
-    const projectionCard = document.getElementById('projectionCard');
-    const monthlyWaste = parseFloat(wasteSlider.value);
+    const card = document.getElementById('projectionCard');
+    
+    // Reset contact button state
+    document.getElementById('investBtn').classList.remove('hidden');
+    document.getElementById('contactReveal').classList.add('hidden');
 
-    // Reset card
-    projectionCard.classList.add('hidden', 'opacity-0');
+    const monthlyWaste = currentMode === 'preset' ? 47.43 : parseFloat(wasteSlider.value);
+
+    // Hide card
+    card.classList.add('hidden', 'opacity-0');
 
     // UI Loading state
     btn.disabled = true;
-    btn.classList.add('opacity-70', 'cursor-not-allowed');
-    box.classList.remove('text-mist');
-    box.innerHTML = '<p class="text-frost">Judging your life choices<span class="dot-pulse">.</span><span class="dot-pulse" style="animation-delay:.15s">.</span><span class="dot-pulse" style="animation-delay:.3s">.</span></p>';
+    btn.classList.add('opacity-70');
+    box.innerHTML = '<p class="text-frost">Analyzing financial incompetence<span class="dot-pulse">.</span><span class="dot-pulse" style="animation-delay:.15s">.</span><span class="dot-pulse" style="animation-delay:.3s">.</span></p>';
 
-    let roastText = `You are setting $${monthlyWaste} on fire every month. Cancel the fluff and put it in a T. Rowe Price account before you go broke.`;
+    let roastText = `You are setting $${monthlyWaste} on fire every month. Cancel the fluff and put it in a T. Rowe Price Blue Chip fund before you go broke.`;
 
     try {
-      // 1. Try Gemini API (Will fail safely if key is broken)
       if (GEMINI_KEY && GEMINI_KEY !== 'YOUR_GEMINI_API_KEY') {
-        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_KEY}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_KEY}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: `Roast this college student for wasting $${monthlyWaste} a month on useless subscriptions instead of investing in a T. Rowe Price mutual fund. Keep it to 1 short, punchy sentence.` }] }]
-          })
+          body: JSON.stringify({ contents: [{ parts: [{ text: `Roast this college student for wasting $${monthlyWaste} a month on useless subscriptions instead of investing in the T. Rowe Price Blue Chip Growth fund. Keep it to 1 short, punchy, savage sentence.` }] }] })
         });
-        if (geminiRes.ok) {
-          const geminiData = await geminiRes.json();
-          roastText = geminiData.candidates[0].content.parts[0].text;
+        if (res.ok) {
+          const data = await res.json();
+          roastText = data.candidates[0].content.parts[0].text;
         }
       }
     } catch (e) {
-      console.log("Gemini fallback activated.");
+      console.log("Using fallback roast text.");
     }
 
-    // Display text
-    box.innerHTML = `<p class="text-frost">${roastText}</p>`;
-
-    // 2. Audio - Using free browser speech to save credits
+    // Display & Speak
+    box.innerHTML = `"${roastText}"`;
     speakWithBrowser(roastText);
 
-    /* 
-    // ELEVENLABS CODE (Uncomment this for judging to use premium voice!)
-    if (ELEVENLABS_KEY !== 'YOUR_ELEVENLABS_API_KEY') {
-        const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'xi-api-key': ELEVENLABS_KEY
-          },
-          body: JSON.stringify({ text: roastText, model_id: "eleven_turbo_v2_5" })
-        });
-        const blob = await audioRes.blob();
-        const audio = new Audio(URL.createObjectURL(blob));
-        audio.play();
-    }
-    */
+    // Update Projections
+    document.getElementById('projSubtitleText').innerText = `$${monthlyWaste.toFixed(2)}`;
+    document.getElementById('btnInvestAmount').innerText = `$${monthlyWaste.toFixed(2)}`;
+    
+    document.getElementById('proj5').innerText = '$' + Math.round(calculateCompound(monthlyWaste, 5)).toLocaleString();
+    document.getElementById('proj10').innerText = '$' + Math.round(calculateCompound(monthlyWaste, 10)).toLocaleString();
+    document.getElementById('proj20').innerText = '$' + Math.round(calculateCompound(monthlyWaste, 20)).toLocaleString();
 
-    // 3. Reveal T. Rowe Price Projection Math
-    document.getElementById('projSubtitle').innerText = `Redirecting your $${monthlyWaste}/mo burn into an index fund`;
-    document.getElementById('proj5').innerText = '$' + calculateCompound(monthlyWaste, 5);
-    document.getElementById('proj10').innerText = '$' + calculateCompound(monthlyWaste, 10);
-    document.getElementById('proj20').innerText = '$' + calculateCompound(monthlyWaste, 20);
+    updateChart(monthlyWaste);
 
-    projectionCard.classList.remove('hidden');
-    setTimeout(() => projectionCard.classList.remove('opacity-0'), 50);
+    // Reveal Card
+    card.classList.remove('hidden');
+    setTimeout(() => card.classList.remove('opacity-0'), 50);
 
-    // Reset button
     btn.disabled = false;
-    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+    btn.classList.remove('opacity-70');
     isScanning = false;
+  }
+
+  // ================= SIMULATED ACTION =================
+  function simulateInvestment() {
+    document.getElementById('investBtn').classList.add('hidden');
+    document.getElementById('contactReveal').classList.remove('hidden');
   }
 </script>
 </body>
