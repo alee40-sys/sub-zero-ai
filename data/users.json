@@ -1,0 +1,41 @@
+[
+    {
+        "id": "UMBC_001",
+        "name": "Alex",
+        "major": "Computer Science",
+        "subscriptions": [
+            {
+                "service": "Netflix",
+                "cost": 15.49,
+                "last_used_days_ago": 2
+            },
+            {
+                "service": "Chegg",
+                "cost": 19.95,
+                "last_used_days_ago": 140
+            },
+            {
+                "service": "Planet Fitness",
+                "cost": 10.00,
+                "last_used_days_ago": 85
+            }
+        ]
+    },
+    {
+        "id": "UMBC_002",
+        "name": "Sarah",
+        "major": "Biology",
+        "subscriptions": [
+            {
+                "service": "Spotify",
+                "cost": 11.99,
+                "last_used_days_ago": 1
+            },
+            {
+                "service": "Adobe Creative Cloud",
+                "cost": 54.99,
+                "last_used_days_ago": 60
+            }
+        ]
+    }
+]
