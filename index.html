@@ -107,8 +107,11 @@
 
       <!-- ============ INPUT TOGGLE ============ -->
       <div class="flex gap-2 mb-4 bg-surface p-1 rounded-lg w-fit border border-white/10 mx-auto">
-        <button id="btnPreset" onclick="switchView('preset')" class="px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all">Common Subscriptions</button>
-        <button id="btnSlider" onclick="switchView('slider')" class="px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all">Custom Input</button>
+        <button id="btnPreset" onclick="switchView('preset')" class="px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all">Common Subs</button>
+        <button id="btnSlider" onclick="switchView('slider')" class="px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all">Custom Slider</button>
+        <button id="btnChat" onclick="switchView('chat')" class="px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all flex items-center gap-1">
+        <span class="w-2 h-2 rounded-full bg-ice animate-pulse"></span> AI Audit
+        </button>
       </div>
 
       <!-- ============ PRESET VIEW ============ -->
