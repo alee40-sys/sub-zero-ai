@@ -48,34 +48,21 @@
       radial-gradient(ellipse 700px 500px at 100% 10%, rgba(139,124,255,0.08), transparent 55%),
       #080B10;
   }
-
-  /* tabular numerals for anything that looks like money */
   .num { font-variant-numeric: tabular-nums; }
-
-  /* Frosted glass card */
   .glass {
     background: linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015));
     border: 1px solid rgba(255,255,255,0.08);
   }
-
-  /* subtle frost texture line at top of page */
   .frost-rule {
     background: linear-gradient(90deg, transparent, rgba(79,216,255,0.6), rgba(139,124,255,0.4), transparent);
     height: 1px;
   }
-
-  /* breathing glow, single deliberate animated moment */
   @keyframes breathe {
     0%, 100% { box-shadow: 0 0 20px rgba(79,216,255,0.35), 0 0 60px rgba(79,216,255,0.15); }
     50% { box-shadow: 0 0 32px rgba(79,216,255,0.55), 0 0 90px rgba(79,216,255,0.28); }
   }
   .breathe { animation: breathe 3.6s ease-in-out infinite; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .breathe { animation: none; }
-  }
-
-  /* scan sweep on the button */
+  @media (prefers-reduced-motion: reduce) { .breathe { animation: none; } }
   .sweep::before {
     content: '';
     position: absolute;
@@ -88,13 +75,9 @@
     transform: translateX(120%);
     transition: transform 0.9s cubic-bezier(.2,.7,.3,1);
   }
-
   ::selection { background: rgba(79,216,255,0.3); }
-
-  /* thin scrollbar for the roast output */
   #roastBox::-webkit-scrollbar { width: 6px; }
   #roastBox::-webkit-scrollbar-thumb { background: rgba(79,216,255,0.25); border-radius: 4px; }
-
   .dot-pulse { animation: dotpulse 1.2s infinite ease-in-out; }
   @keyframes dotpulse { 0%,80%,100% { opacity: 0.25; } 40% { opacity: 1; } }
 </style>
@@ -106,7 +89,6 @@
 
   <div class="max-w-4xl mx-auto px-6">
 
-    <!-- ============ HEADER ============ -->
     <header class="flex items-center justify-between py-8">
       <div class="flex items-center gap-3">
         <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -120,67 +102,37 @@
       </div>
       <div class="hidden sm:flex items-center gap-2 text-xs text-mist">
         <span class="w-1.5 h-1.5 rounded-full bg-ice shadow-[0_0_8px_rgba(79,216,255,0.9)]"></span>
-        Live sandbox account
+        HackUMBC Live Demo
       </div>
     </header>
 
     <main class="pb-24">
 
-      <!-- ============ SUBSCRIPTIONS SECTION ============ -->
+      <!-- ============ DYNAMIC INPUT SLIDER ============ -->
       <section class="mb-10">
-        <div class="flex items-baseline justify-between mb-4">
-          <h2 class="font-display text-base font-500 text-frost">Recurring subscriptions</h2>
-          <span class="text-xs text-mist">3 active</span>
-        </div>
-
-        <div class="glass rounded-2xl overflow-hidden">
-          <!-- Netflix -->
-          <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-            <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-[#2a0f12] flex items-center justify-center shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 3v18l4-1.2V4.2L5 3z" fill="#E5484D"/><path d="M15 3v18l4 1.2V4.2L15 3z" fill="#E5484D" opacity="0.55"/><path d="M9 4l6 15.8V4H9z" fill="#8f1e22"/></svg>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-frost">Netflix</p>
-                <p class="text-xs text-mist">Renews Oct 4 · Standard w/ Ads</p>
-              </div>
+        <div class="glass rounded-2xl p-6 border border-white/[0.06]">
+          <div class="flex items-baseline justify-between mb-6">
+            <div>
+              <h2 class="font-display text-base font-500 text-frost">Monthly Useless Spend</h2>
+              <p class="text-xs text-mist mt-1">Drag to set your monthly subscription burn</p>
             </div>
-            <p class="num text-sm font-medium text-frost">$15.49<span class="text-mist">/mo</span></p>
+            <span id="sliderValueDisplay" class="font-display text-3xl font-600 text-ice num">$50</span>
           </div>
-
-          <!-- Chegg -->
-          <div class="flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-            <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-[#241a05] flex items-center justify-center shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v3H4V5zm0 5.5h16V19a1 1 0 01-1 1H5a1 1 0 01-1-1v-8.5z" fill="#F2A93B"/></svg>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-frost">Chegg Study</p>
-                <p class="text-xs text-mist">Renews Oct 11 · Monthly plan</p>
-              </div>
-            </div>
-            <p class="num text-sm font-medium text-frost">$19.95<span class="text-mist">/mo</span></p>
+          
+          <input 
+            type="range" 
+            id="wasteSlider" 
+            min="0" 
+            max="200" 
+            step="5"
+            value="50" 
+            class="w-full h-2 bg-surface2 rounded-lg appearance-none cursor-pointer accent-ice"
+          >
+          
+          <div class="flex justify-between text-xs text-mist mt-3 font-mono">
+            <span>$0</span>
+            <span>$200/mo</span>
           </div>
-
-          <!-- Spotify -->
-          <div class="flex items-center justify-between px-5 py-4">
-            <div class="flex items-center gap-3.5">
-              <div class="w-10 h-10 rounded-xl bg-[#08210f] flex items-center justify-center shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" fill="#3ED679"/><path d="M6.5 9.8c3.2-.9 6.9-.7 9.6.9M7 13c2.6-.7 5.6-.5 7.9.8M7.5 16c2-.5 4.3-.4 6 .6" stroke="#08210f" stroke-width="1.4" stroke-linecap="round"/></svg>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-frost">Spotify Premium</p>
-                <p class="text-xs text-mist">Renews Oct 18 · Individual</p>
-              </div>
-            </div>
-            <p class="num text-sm font-medium text-frost">$11.99<span class="text-mist">/mo</span></p>
-          </div>
-        </div>
-
-        <!-- Total -->
-        <div class="glass rounded-2xl mt-3 px-5 py-4 flex items-center justify-between">
-          <p class="text-sm text-mist">Total monthly burn</p>
-          <p class="num font-display text-2xl font-600 text-frost">$47.43<span class="text-sm text-mist font-body">/mo</span></p>
         </div>
       </section>
 
@@ -215,89 +167,152 @@
         </div>
       </section>
 
+      <!-- ============ INVESTMENT PROJECTION CARD ============ -->
+      <section id="projectionCard" class="mt-6 hidden transition-all duration-500 opacity-0">
+        <div class="glass rounded-2xl p-6 border border-ice/30">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-display text-lg font-600 text-ice">T. Rowe Price Growth Pivot</h3>
+              <p id="projSubtitle" class="text-xs text-mist">Redirecting your burn into an index fund</p>
+            </div>
+            <span class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded bg-ice/10 text-ice border border-ice/20">8% Est. Return</span>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 text-center mt-6">
+            <div class="bg-surface p-3 rounded-xl border border-white/5">
+              <p class="text-xs text-mist mb-1">5 Years</p>
+              <p id="proj5" class="font-display text-lg font-bold text-frost num">$0</p>
+            </div>
+            <div class="bg-surface p-3 rounded-xl border border-ice/20 relative overflow-hidden">
+              <div class="absolute inset-0 bg-ice/5"></div>
+              <p class="text-xs text-mist mb-1 relative z-10">10 Years</p>
+              <p id="proj10" class="font-display text-xl font-bold text-ice num relative z-10">$0</p>
+            </div>
+            <div class="bg-surface p-3 rounded-xl border border-white/5">
+              <p class="text-xs text-mist mb-1">20 Years</p>
+              <p id="proj20" class="font-display text-lg font-bold text-frost num">$0</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
 
     <footer class="pb-10 text-center">
-      <p class="text-[11px] text-mist/70">Sub‑Zero AI · Built for the 24hr hack · Not real financial advice, just cold truths</p>
+      <p class="text-[11px] text-mist/70">Sub‑Zero AI · Built for HackUMBC 2026 · Not real financial advice</p>
     </footer>
 
   </div>
 
 <script>
-  // ADD YOUR KEYS HERE BEFORE DEPLOYING
+  // ADD YOUR KEYS HERE 
   const GEMINI_KEY = 'YOUR_GEMINI_API_KEY';
   const ELEVENLABS_KEY = 'YOUR_ELEVENLABS_API_KEY';
   
   const VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb'; // "George" voice
 
-  const mockData = "Netflix ($15.49), Chegg ($19.95), Spotify ($11.99)";
+  // Update slider text instantly
+  const wasteSlider = document.getElementById('wasteSlider');
+  const sliderValueDisplay = document.getElementById('sliderValueDisplay');
+  
+  wasteSlider.addEventListener('input', (e) => {
+    sliderValueDisplay.innerText = `$${e.target.value}`;
+  });
+
+  // Calculate compound interest for T. Rowe Price pitch
+  function calculateCompound(monthlyDeposit, years) {
+    const r = 0.08; 
+    const n = 12;   
+    const t = years;
+    const fv = monthlyDeposit * (((Math.pow(1 + r/n, n*t)) - 1) / (r/n));
+    return Math.round(fv).toLocaleString();
+  }
+
+  // Free browser voice fallback (saves ElevenLabs credits)
+  function speakWithBrowser(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.pitch = 0.9;
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+  }
+
   let isScanning = false;
 
-// Temporary to not waste elvenlabs api keys character limit
-  
-  function speakWithBrowser(text) {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.pitch = 0.9;
-  utterance.rate = 1.0;
-  window.speechSynthesis.speak(utterance);
-}
-  // End of function
-  
   async function scanAndRoast() {
     if (isScanning) return;
     isScanning = true;
 
     const btn = document.getElementById('roastBtn');
     const box = document.getElementById('roastBox');
+    const projectionCard = document.getElementById('projectionCard');
+    const monthlyWaste = parseFloat(wasteSlider.value);
 
-    // Trigger loading animation
+    // Reset card
+    projectionCard.classList.add('hidden', 'opacity-0');
+
+    // UI Loading state
     btn.disabled = true;
     btn.classList.add('opacity-70', 'cursor-not-allowed');
     box.classList.remove('text-mist');
     box.innerHTML = '<p class="text-frost">Judging your life choices<span class="dot-pulse">.</span><span class="dot-pulse" style="animation-delay:.15s">.</span><span class="dot-pulse" style="animation-delay:.3s">.</span></p>';
 
+    let roastText = `You are setting $${monthlyWaste} on fire every month. Cancel the fluff and put it in a T. Rowe Price account before you go broke.`;
+
     try {
-      // 1. Gemini API Call
-      const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `You are a savage financial advisor. Roast this college student for wasting money on these subscriptions instead of investing in a T. Rowe Price mutual fund. Keep it to 2 short, punchy sentences. Subscriptions: ${mockData}` }] }]
-        })
-      });
-      
-      const geminiData = await geminiRes.json();
-      // placeholder 
-      const roastText = "You are spending 50 dollars a month on streaming but your GPA is a 2.0. Cancel Netflix and open a T. Rowe Price account.";
-      
-      box.innerHTML = `<p class="text-frost">${roastText}</p>`;
-
-      // 2. ElevenLabs API Call
-      const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'xi-api-key': ELEVENLABS_KEY
-        },
-        body: JSON.stringify({
-          text: roastText,
-          model_id: "eleven_turbo_v2_5" 
-        })
-      });
-
-      // 3. Play Audio
-      const blob = await audioRes.blob();
-      const audio = new Audio(URL.createObjectURL(blob));
-      audio.play();
-
-    } catch (error) {
-      box.innerHTML = '<p class="text-burn">System Error: Check API Keys in console.</p>';
-      console.error(error);
-    } finally {
-      btn.disabled = false;
-      btn.classList.remove('opacity-70', 'cursor-not-allowed');
-      isScanning = false;
+      // 1. Try Gemini API (Will fail safely if key is broken)
+      if (GEMINI_KEY && GEMINI_KEY !== 'YOUR_GEMINI_API_KEY') {
+        const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${GEMINI_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `Roast this college student for wasting $${monthlyWaste} a month on useless subscriptions instead of investing in a T. Rowe Price mutual fund. Keep it to 1 short, punchy sentence.` }] }]
+          })
+        });
+        if (geminiRes.ok) {
+          const geminiData = await geminiRes.json();
+          roastText = geminiData.candidates[0].content.parts[0].text;
+        }
+      }
+    } catch (e) {
+      console.log("Gemini fallback activated.");
     }
+
+    // Display text
+    box.innerHTML = `<p class="text-frost">${roastText}</p>`;
+
+    // 2. Audio - Using free browser speech to save credits
+    speakWithBrowser(roastText);
+
+    /* 
+    // ELEVENLABS CODE (Uncomment this for judging to use premium voice!)
+    if (ELEVENLABS_KEY !== 'YOUR_ELEVENLABS_API_KEY') {
+        const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'xi-api-key': ELEVENLABS_KEY
+          },
+          body: JSON.stringify({ text: roastText, model_id: "eleven_turbo_v2_5" })
+        });
+        const blob = await audioRes.blob();
+        const audio = new Audio(URL.createObjectURL(blob));
+        audio.play();
+    }
+    */
+
+    // 3. Reveal T. Rowe Price Projection Math
+    document.getElementById('projSubtitle').innerText = `Redirecting your $${monthlyWaste}/mo burn into an index fund`;
+    document.getElementById('proj5').innerText = '$' + calculateCompound(monthlyWaste, 5);
+    document.getElementById('proj10').innerText = '$' + calculateCompound(monthlyWaste, 10);
+    document.getElementById('proj20').innerText = '$' + calculateCompound(monthlyWaste, 20);
+
+    projectionCard.classList.remove('hidden');
+    setTimeout(() => projectionCard.classList.remove('opacity-0'), 50);
+
+    // Reset button
+    btn.disabled = false;
+    btn.classList.remove('opacity-70', 'cursor-not-allowed');
+    isScanning = false;
   }
 </script>
 </body>
