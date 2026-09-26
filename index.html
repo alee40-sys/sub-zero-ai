@@ -233,6 +233,16 @@
   const mockData = "Netflix ($15.49), Chegg ($19.95), Spotify ($11.99)";
   let isScanning = false;
 
+// Temporary to not waste elvenlabs api keys character limit
+  
+  function speakWithBrowser(text) {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.pitch = 0.9;
+  utterance.rate = 1.0;
+  window.speechSynthesis.speak(utterance);
+}
+  // End of function
+  
   async function scanAndRoast() {
     if (isScanning) return;
     isScanning = true;
@@ -257,7 +267,8 @@
       });
       
       const geminiData = await geminiRes.json();
-      const roastText = geminiData.candidates[0].content.parts[0].text;
+      // placeholder 
+      const roastText = "You are spending 50 dollars a month on streaming but your GPA is a 2.0. Cancel Netflix and open a T. Rowe Price account.";
       
       box.innerHTML = `<p class="text-frost">${roastText}</p>`;
 
