@@ -10,7 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Chart.js for Growth Visualization -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
   <!-- Confetti Cannon -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
@@ -578,51 +578,65 @@
     const crosshairPlugin = {
       id: 'crosshair',
       afterDraw(chart) {
-        const active = chart.getActiveElements();
-        if (!active || !active.length) return;
-        const { ctx, chartArea: { top, bottom } } = chart;
-        const x = active[0].element.x;
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(x, top);
-        ctx.lineTo(x, bottom);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-        ctx.stroke();
-        ctx.restore();
+        try {
+          if (typeof chart.getActiveElements !== 'function') return;
+          const active = chart.getActiveElements();
+          if (!active || !active.length) return;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return;
+          const { top, bottom } = chartArea;
+          const x = active[0].element.x;
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(x, top);
+          ctx.lineTo(x, bottom);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+          ctx.stroke();
+          ctx.restore();
+        } catch (e) {
+          // Never let a crosshair-drawing hiccup take down the whole chart.
+          console.warn('crosshair plugin skipped a frame:', e);
+        }
       }
     };
 
     function externalTooltipHandler(context) {
-      const { chart, tooltip } = context;
-      const tooltipEl = document.getElementById('chartTooltip');
-      const wrapper = document.getElementById('chartWrapper');
+      try {
+        const { chart, tooltip } = context;
+        const tooltipEl = document.getElementById('chartTooltip');
+        const wrapper = document.getElementById('chartWrapper');
+        if (!tooltipEl || !wrapper) return;
 
-      if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints || !tooltip.dataPoints.length) {
-        tooltipEl.classList.add('hidden');
-        return;
+        if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints || !tooltip.dataPoints.length) {
+          tooltipEl.classList.add('hidden');
+          return;
+        }
+
+        const dataPoint = tooltip.dataPoints[0];
+        const yearLabel = dataPoint.label === 'Now' ? 'Now' : `Year ${dataPoint.label.replace('y', '')}`;
+
+        document.getElementById('tooltipYearLabel').innerText = yearLabel;
+        document.getElementById('tooltipValueLabel').innerText = '$' + Math.round(dataPoint.parsed.y).toLocaleString();
+
+        tooltipEl.classList.remove('hidden');
+
+        // Position it beside the hovered point, flipping to the left side
+        // near the right edge so it never spills outside the card.
+        const tooltipWidth = tooltipEl.offsetWidth || 150;
+        let left = chart.canvas.offsetLeft + tooltip.caretX + 14;
+        if (left + tooltipWidth > wrapper.clientWidth) {
+          left = chart.canvas.offsetLeft + tooltip.caretX - tooltipWidth - 14;
+        }
+        let top = chart.canvas.offsetTop + tooltip.caretY - tooltipEl.offsetHeight / 2;
+        top = Math.max(4, Math.min(top, wrapper.clientHeight - tooltipEl.offsetHeight - 4));
+
+        tooltipEl.style.left = left + 'px';
+        tooltipEl.style.top = top + 'px';
+      } catch (e) {
+        // Never let a tooltip-positioning hiccup take down the whole chart.
+        console.warn('chart tooltip skipped a frame:', e);
       }
-
-      const dataPoint = tooltip.dataPoints[0];
-      const yearLabel = dataPoint.label === 'Now' ? 'Now' : `Year ${dataPoint.label.replace('y', '')}`;
-
-      document.getElementById('tooltipYearLabel').innerText = yearLabel;
-      document.getElementById('tooltipValueLabel').innerText = '$' + Math.round(dataPoint.parsed.y).toLocaleString();
-
-      tooltipEl.classList.remove('hidden');
-
-      // Position it beside the hovered point, flipping to the left side
-      // near the right edge so it never spills outside the card.
-      const tooltipWidth = tooltipEl.offsetWidth || 150;
-      let left = chart.canvas.offsetLeft + tooltip.caretX + 14;
-      if (left + tooltipWidth > wrapper.clientWidth) {
-        left = chart.canvas.offsetLeft + tooltip.caretX - tooltipWidth - 14;
-      }
-      let top = chart.canvas.offsetTop + tooltip.caretY - tooltipEl.offsetHeight / 2;
-      top = Math.max(4, Math.min(top, wrapper.clientHeight - tooltipEl.offsetHeight - 4));
-
-      tooltipEl.style.left = left + 'px';
-      tooltipEl.style.top = top + 'px';
     }
 
     // ================= COMPOUND MATH & CHART =================
