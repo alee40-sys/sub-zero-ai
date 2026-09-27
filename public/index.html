@@ -390,12 +390,14 @@
 
       currentPresetTotal = currentStudentSubs.reduce((sum, sub) => {
         const evalResult = evaluateSubscription(sub);
-        return (evalResult.status === "WASTE" && !sub.canceled) ? sum + sub.monthly_cost : sum;
+        const countsAsBurn = evalResult.status === "WASTE" || evalResult.status === "WARNING";
+        return (countsAsBurn && !sub.canceled) ? sum + sub.monthly_cost : sum;
       }, 0);
 
       initialPresetTotal = currentStudentSubs.reduce((sum, sub) => {
         const evalResult = evaluateSubscription(sub);
-        return evalResult.status === "WASTE" ? sum + sub.monthly_cost : sum;
+        const countsAsBurn = evalResult.status === "WASTE" || evalResult.status === "WARNING";
+        return countsAsBurn ? sum + sub.monthly_cost : sum;
       }, 0);
 
       updateHealthScoreUI();
@@ -478,6 +480,7 @@
           currentPresetTotal -= cost;
           healthScore = Math.min(100, healthScore + 15);
         } else if (evalResult.status === "WARNING") {
+          currentPresetTotal -= cost;
           healthScore = Math.min(100, healthScore + 5);
         }
 
@@ -487,8 +490,16 @@
       } catch (err) {
         btnElement.innerText = "Canceled";
         currentStudentSubs[index].canceled = true;
-        currentPresetTotal -= cost;
-        healthScore = Math.min(100, healthScore + 15);
+
+        const evalResult = evaluateSubscription(currentStudentSubs[index]);
+        if (evalResult.status === "WASTE") {
+          currentPresetTotal -= cost;
+          healthScore = Math.min(100, healthScore + 15);
+        } else if (evalResult.status === "WARNING") {
+          currentPresetTotal -= cost;
+          healthScore = Math.min(100, healthScore + 5);
+        }
+
         updateHealthScoreUI();
         updateTotalBurnDisplay();
       }
@@ -599,15 +610,28 @@
       const viceInput = document.getElementById('viceInput');
       const customVice = viceInput ? viceInput.value.trim() : "";
 
-      let roastText = currentActiveStudent.ai_roast || `You are burning ${activeBurn.toFixed(2)} dollars a month on ${customVice || 'useless subscriptions'} while your bank account starves. Move it to TRBCX.`;
-      let targetName = currentActiveStudent.first_name || 'You';
+      let roastText;
+      let targetName;
 
-      const isSuccess = (currentMode === 'preset' && currentPresetTotal <= 0.01);
+      if (currentMode === 'preset') {
+        targetName = currentActiveStudent.first_name || 'You';
+        roastText = currentActiveStudent.ai_roast ||
+          `You are burning ${activeBurn.toFixed(2)} dollars a month on useless subscriptions while your bank account starves. Move it to TRBCX.`;
 
-      if (isSuccess) {
-        roastText = `System anomaly detected. You actually canceled your dead weight. You are officially in the top five percent of financially literate students. Let's get that money into T. Rowe Price.`;
-      } else if (customVice) {
-        roastText = `If you keep blowing ${activeBurn.toFixed(2)} dollars a month on ${customVice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
+        const isSuccess = currentPresetTotal <= 0.01;
+        if (isSuccess) {
+          roastText = `System anomaly detected. You actually canceled your dead weight. You are officially in the top five percent of financially literate students. Let's get that money into T. Rowe Price.`;
+        }
+      } else {
+        // Custom Slider mode: always build the roast from the live slider
+        // value (and vice text, if any) — never fall back to a preset
+        // student's canned line.
+        targetName = 'You';
+        if (customVice) {
+          roastText = `If you keep blowing ${activeBurn.toFixed(2)} dollars a month on ${customVice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
+        } else {
+          roastText = `You're manually flagging ${activeBurn.toFixed(2)} dollars a month in useless spend. At least you're honest about it. Redirect that into TRBCX and let compound interest do the rest.`;
+        }
       }
 
       document.getElementById('verdictTitle').innerText = `Sub‑Zero AI Verdict for ${targetName}`;
