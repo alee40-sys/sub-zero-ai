@@ -1,100 +1,93 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
 require('dotenv').config();
+const express = require('express');
+const path = require('path');
+const studentsDB = require('./mock_db.json');
 
 const app = express();
-app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Mock Leaderboard State
-let campusWasteTotal = 4520.50;
+let globalWaste = 4342.77;
 
-// 1. Leaderboard Endpoint
 app.get('/api/leaderboard', (req, res) => {
-    res.json({ total: campusWasteTotal });
+    res.json({ total: globalWaste });
 });
 
-// 2. Fetch User Endpoint
-app.get('/api/user/:id', (req, res) => {
-    try {
-        const users = JSON.parse(fs.readFileSync('./data/users.json'));
-        const user = users.find(u => u.id === req.params.id);
-        user ? res.json(user) : res.status(404).json({ error: "User not found" });
-    } catch (error) {
-        res.status(500).json({ error: "Database error" });
-    }
-});
-
-// 3. The "Smoke and Mirrors" Randomizer Roast Endpoint
-app.post('/api/roast', (req, res) => {
-    const { amount } = req.body;
-    const roasts = [
-        `You are burning $${amount} a month on subscriptions while your bank account starves. Move it to TRBCX.`,
-        `Netflix isn't going to fund your retirement. Cancel it and open a T. Rowe Price account.`,
-        `You haven't opened Chegg since midterms. That's money you could be compounding at 8%.`,
-        `Stop subsidizing Spotify and start paying your future self. T. Rowe Price is waiting.`,
-        `Your monthly subscription waste is painful to look at. Axe the fluff and buy an index fund.`
-    ];
-
-    const randomRoast = roasts[Math.floor(Math.random() * roasts.length)];
-    res.json({ roast: randomRoast });
-});
-
-// 4. Auto-Cancel & SMS Alert Simulation Endpoint
 app.post('/api/cancel', (req, res) => {
-    const { service, cost, phone } = req.body;
-
-    campusWasteTotal -= cost;
-
-    console.log(`\n--- TWILIO SMS TRIGGERED ---`);
-    console.log(`To: ${phone}`);
-    console.log(`Msg: Sub-Zero AI just canceled your dead ${service} subscription. You saved $${cost}. We moved this to your T. Rowe Price investment queue.`);
-    console.log(`----------------------------\n`);
-
-    res.json({ success: true, message: `${service} canceled successfully.` });
+    const { cost } = req.body;
+    globalWaste -= cost;
+    res.json({ success: true, newTotal: globalWaste });
 });
 
-// 5. Randomized ElevenLabs Secure TTS Endpoint
+app.post('/api/roast', (req, res) => {
+    const { amount, vice, isSuccess } = req.body;
+
+    console.log(`\n--- NEW REQUEST ---`);
+
+    let selectedResponse = "";
+    let studentData = {
+        first_name: "You",
+        subscriptions: [
+            { name: "Custom Expense", monthly_cost: parseFloat(amount), minutes_used_last_month: 0 }
+        ]
+    };
+
+    if (isSuccess) {
+        selectedResponse = `System anomaly detected. You actually canceled your dead weight. You are officially in the top five percent of financially literate students. Let's get that money into T. Rowe Price.`;
+    } else if (vice && vice.trim() !== "") {
+        const lowerHabit = vice.toLowerCase();
+        if (lowerHabit.includes("doordash") || lowerHabit.includes("uber eats") || lowerHabit.includes("food")) {
+            selectedResponse = `You are spending ${amount} dollars on ${vice}? You are literally eating your retirement. Let T. Rowe Price cook instead.`;
+        } else if (lowerHabit.includes("draftkings") || lowerHabit.includes("betting") || lowerHabit.includes("fanduel") || lowerHabit.includes("parlay")) {
+            selectedResponse = `I parlayed your financial data, and your odds of retiring are zero. Draft T. Rowe Price instead.`;
+        } else {
+            selectedResponse = `If you keep blowing ${amount} dollars a month on ${vice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
+        }
+    } else {
+        // Pick a random student from mock_db.json
+        const randomStudent = studentsDB[Math.floor(Math.random() * studentsDB.length)];
+        console.log(`Pulled DB Record: ${randomStudent.first_name} (${randomStudent.major})`);
+        selectedResponse = randomStudent.ai_roast;
+        studentData = randomStudent; // Pass the whole student object including their custom subscriptions
+    }
+
+    res.json({ roast: selectedResponse, student: studentData });
+});
+
 app.post('/api/tts', async (req, res) => {
     const { text } = req.body;
-    const apiKey = process.env.ELEVENLABS_API_KEY;
+    const elevenLabsKey = process.env.ELEVENLABS_API_KEY;
 
-    const voiceIDs = [
-        'JBFqnCBsd6RMkjVDRZzb', // George
-        '21m00Tcm4TlvDq8ikWAM', // Rachel
-        'EXAVITQu4vr4xnSDxMaL', // Sarah
-        'AZnzlk1XvdvUeBnXmlld'  // Domi
-    ];
-    const randomVoice = voiceIDs[Math.floor(Math.random() * voiceIDs.length)];
+    if (!elevenLabsKey) return res.status(500).json({ error: "No ElevenLabs key" });
 
     try {
-        const audioRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${randomVoice}`, {
+        const voiceId = 'pNInz6obpgDQGcFmaJgB';
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
             method: 'POST',
             headers: {
+                'Accept': 'audio/mpeg',
+                'xi-api-key': elevenLabsKey,
                 'Content-Type': 'application/json',
-                'xi-api-key': apiKey
             },
             body: JSON.stringify({
                 text: text,
-                model_id: "eleven_turbo_v2_5"
+                model_id: "eleven_flash_v2_5",
+                voice_settings: { stability: 0.5, similarity_boost: 0.5 }
             })
         });
 
-        const arrayBuffer = await audioRes.arrayBuffer();
+        if (!response.ok) throw new Error("ElevenLabs API failed");
+
+        const arrayBuffer = await response.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);
 
-        // This is the verification log you were missing
-        console.log("ElevenLabs API successfully generated audio.");
-
-        res.set('Content-Type', 'audio/mpeg');
+        res.set({ 'Content-Type': 'audio/mpeg', 'Content-Length': buffer.length });
         res.send(buffer);
+
     } catch (error) {
-        console.error("ElevenLabs Error:", error);
-        res.status(500).json({ error: "Voice generation failed" });
+        res.status(500).json({ error: "TTS failed" });
     }
 });
 
-const PORT = 3000;
-app.listen(PORT, () => console.log(`Backend running live on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
