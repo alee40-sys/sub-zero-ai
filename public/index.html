@@ -255,7 +255,7 @@
           </div>
 
           <!-- Chart.js Canvas -->
-          <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48 relative">
+          <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48 relative" style="height: 192px; min-height: 192px;">
             <canvas id="growthChart"></canvas>
             <div id="chartTooltip"
               class="hidden absolute z-20 pointer-events-none bg-[#0B121A] border border-white/10 rounded-xl px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.55)]"
@@ -305,6 +305,67 @@
   </div>
 
   <script>
+    // ================= PLUGINS DECLARED FIRST (Fixes ReferenceError) =================
+    const crosshairPlugin = {
+      id: 'crosshair',
+      afterDraw(chart) {
+        try {
+          if (typeof chart.getActiveElements !== 'function') return;
+          const active = chart.getActiveElements();
+          if (!active || !active.length) return;
+          const { ctx, chartArea } = chart;
+          if (!chartArea) return;
+          const { top, bottom } = chartArea;
+          const x = active[0].element.x;
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(x, top);
+          ctx.lineTo(x, bottom);
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+          ctx.stroke();
+          ctx.restore();
+        } catch (e) {
+          console.warn('crosshair plugin skipped a frame:', e);
+        }
+      }
+    };
+
+    function externalTooltipHandler(context) {
+      try {
+        const { chart, tooltip } = context;
+        const tooltipEl = document.getElementById('chartTooltip');
+        const wrapper = document.getElementById('chartWrapper');
+        if (!tooltipEl || !wrapper) return;
+
+        if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints || !tooltip.dataPoints.length) {
+          tooltipEl.classList.add('hidden');
+          return;
+        }
+
+        const dataPoint = tooltip.dataPoints[0];
+        const yearLabel = dataPoint.label === 'Now' ? 'Now' : `Year ${dataPoint.label.replace('y', '')}`;
+
+        document.getElementById('tooltipYearLabel').innerText = yearLabel;
+        document.getElementById('tooltipValueLabel').innerText = '$' + Math.round(dataPoint.parsed.y).toLocaleString();
+
+        tooltipEl.classList.remove('hidden');
+
+        const tooltipWidth = tooltipEl.offsetWidth || 150;
+        let left = chart.canvas.offsetLeft + tooltip.caretX + 14;
+        if (left + tooltipWidth > wrapper.clientWidth) {
+          left = chart.canvas.offsetLeft + tooltip.caretX - tooltipWidth - 14;
+        }
+        let top = chart.canvas.offsetTop + tooltip.caretY - tooltipEl.offsetHeight / 2;
+        top = Math.max(4, Math.min(top, wrapper.clientHeight - tooltipEl.offsetHeight - 4));
+
+        tooltipEl.style.left = left + 'px';
+        tooltipEl.style.top = top + 'px';
+      } catch (e) {
+        console.warn('chart tooltip skipped a frame:', e);
+      }
+    }
+
     // ================= STATE & VIEW TOGGLE =================
     let currentMode = 'preset';
     let growthChart = null;
@@ -523,67 +584,6 @@
     fetchNewStudent();
     updateChart(0);
 
-    // ================= CROSSHAIR + CUSTOM TOOLTIP =================
-    const crosshairPlugin = {
-      id: 'crosshair',
-      afterDraw(chart) {
-        try {
-          if (typeof chart.getActiveElements !== 'function') return;
-          const active = chart.getActiveElements();
-          if (!active || !active.length) return;
-          const { ctx, chartArea } = chart;
-          if (!chartArea) return;
-          const { top, bottom } = chartArea;
-          const x = active[0].element.x;
-          ctx.save();
-          ctx.beginPath();
-          ctx.moveTo(x, top);
-          ctx.lineTo(x, bottom);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-          ctx.stroke();
-          ctx.restore();
-        } catch (e) {
-          console.warn('crosshair plugin skipped a frame:', e);
-        }
-      }
-    };
-
-    function externalTooltipHandler(context) {
-      try {
-        const { chart, tooltip } = context;
-        const tooltipEl = document.getElementById('chartTooltip');
-        const wrapper = document.getElementById('chartWrapper');
-        if (!tooltipEl || !wrapper) return;
-
-        if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints || !tooltip.dataPoints.length) {
-          tooltipEl.classList.add('hidden');
-          return;
-        }
-
-        const dataPoint = tooltip.dataPoints[0];
-        const yearLabel = dataPoint.label === 'Now' ? 'Now' : `Year ${dataPoint.label.replace('y', '')}`;
-
-        document.getElementById('tooltipYearLabel').innerText = yearLabel;
-        document.getElementById('tooltipValueLabel').innerText = '$' + Math.round(dataPoint.parsed.y).toLocaleString();
-
-        tooltipEl.classList.remove('hidden');
-
-        const tooltipWidth = tooltipEl.offsetWidth || 150;
-        let left = chart.canvas.offsetLeft + tooltip.caretX + 14;
-        if (left + tooltipWidth > wrapper.clientWidth) {
-          left = chart.canvas.offsetLeft + tooltip.caretX - tooltipWidth - 14;
-        }
-        let top = chart.canvas.offsetTop + tooltip.caretY - tooltipEl.offsetHeight / 2;
-        top = Math.max(4, Math.min(top, wrapper.clientHeight - tooltipEl.offsetHeight - 4));
-
-        tooltipEl.style.left = left + 'px';
-        tooltipEl.style.top = top + 'px';
-      } catch (e) {
-        console.warn('chart tooltip skipped a frame:', e);
-      }
-    }
-
     // ================= COMPOUND MATH & CHART =================
     function calculateCompound(monthlyDeposit, years) {
       const r = 0.1179, n = 12, t = years;
@@ -633,8 +633,16 @@
             tooltip: { enabled: false, external: externalTooltipHandler }
           },
           scales: {
-            y: { ticks: { color: '#8194A8', callback: (val) => '$' + val.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' } },
-            x: { ticks: { color: '#8194A8', maxRotation: 0, autoSkip: true, autoSkipPadding: 8 }, grid: { display: false } }
+            y: { 
+              min: 0,
+              suggestedMax: 500,
+              ticks: { color: '#8194A8', callback: (val) => '$' + val.toLocaleString() }, 
+              grid: { color: 'rgba(255,255,255,0.05)' } 
+            },
+            x: { 
+              ticks: { color: '#8194A8', maxRotation: 0, autoSkip: true, autoSkipPadding: 8 }, 
+              grid: { display: false } 
+            }
           }
         },
         plugins: [crosshairPlugin]
