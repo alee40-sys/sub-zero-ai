@@ -541,13 +541,13 @@
 
       currentPresetTotal = currentStudentSubs.reduce((sum, sub) => {
         const evalResult = evaluateSubscription(sub);
-        const countsAsBurn = evalResult.status === "WASTE" || evalResult.status === "WARNING";
+        const countsAsBurn = (evalResult.status === "WASTE" || evalResult.status === "WARNING");
         return (countsAsBurn && !sub.canceled) ? sum + sub.monthly_cost : sum;
       }, 0);
 
       initialPresetTotal = currentStudentSubs.reduce((sum, sub) => {
         const evalResult = evaluateSubscription(sub);
-        const countsAsBurn = evalResult.status === "WASTE" || evalResult.status === "WARNING";
+        const countsAsBurn = (evalResult.status === "WASTE" || evalResult.status === "WARNING");
         return countsAsBurn ? sum + sub.monthly_cost : sum;
       }, 0);
 
@@ -558,6 +558,7 @@
         const evalResult = evaluateSubscription(sub);
         const isCanceled = sub.canceled;
         const displayHours = sub.hours_used_last_month !== undefined ? sub.hours_used_last_month : 0;
+        const isEssential = evalResult.status === "ESSENTIAL";
 
         container.innerHTML += `
           <div class="flex items-center justify-between px-5 py-3.5 ${index !== subs.length - 1 ? 'border-b border-white/[0.06]' : ''}">
@@ -575,9 +576,13 @@
             </div>
             <div class="flex items-center gap-3">
               <p class="num text-sm font-medium text-frost">$${sub.monthly_cost.toFixed(2)}<span class="text-mist">/mo</span></p>
-              <button id="cancel-btn-${index}" onclick="autoCancel('${sub.name}', ${sub.monthly_cost}, ${index})" class="px-2.5 py-1 ${isCanceled ? 'bg-surface2 text-mist border-white/10 cursor-default' : 'bg-surface2 hover:bg-burn/20 text-burn border-burn/30'} text-[11px] font-medium rounded-md border transition-colors" ${isCanceled ? 'disabled' : ''}>
-                ${isCanceled ? 'Canceled' : 'Auto-Cancel'}
-              </button>
+              ${isEssential ? `
+                <span class="text-[11px] text-green-400 px-2 py-1 bg-green-500/10 rounded border border-green-500/20 font-medium">Kept</span>
+              ` : `
+                <button id="cancel-btn-${index}" onclick="autoCancel('${sub.name}',${sub.monthly_cost}, ${index})" class="px-2.5 py-1 ${isCanceled ? 'bg-surface2 text-mist border-white/10 cursor-default' : 'bg-surface2 hover:bg-burn/20 text-burn border-burn/30'} text-[11px] font-medium rounded-md border transition-colors" ${isCanceled ? 'disabled' : ''}>
+                  ${isCanceled ? 'Canceled' : 'Auto-Cancel'}
+                </button>
+              `}
             </div>
           </div>
         `;
@@ -604,7 +609,7 @@
 
     async function autoCancel(service, cost, index) {
       const btnElement = document.getElementById(`cancel-btn-${index}`);
-      if (btnElement.innerText === "Canceled") return;
+      if (!btnElement || btnElement.innerText === "Canceled") return;
 
       btnElement.innerText = "Canceling...";
       btnElement.disabled = true;
@@ -806,7 +811,7 @@
         targetName = currentActiveStudent.first_name || 'You';
         
         if (currentPresetTotal <= 0.01) {
-          roastText = "Zero waste detected. You've officially cut all the dead weight out of your budget. Time to let compound interest do its magic.";
+          roastText = "All unnecessary subscriptions cleared. You're only keeping what's essential. Absolute power move for your savings.";
         } else {
           roastText = currentActiveStudent.ai_roast || `You are burning ${Math.round(activeBurn)} dollars a month on useless subscriptions.`;
         }
