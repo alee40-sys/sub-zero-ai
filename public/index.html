@@ -331,11 +331,35 @@
       document.getElementById('btnSlider').className = view === 'slider'
         ? 'px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all'
         : 'px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all';
+
+      // Make sure the graph reflects whichever mode we just switched into,
+      // instead of showing stale numbers from the other mode.
+      if (view === 'slider') {
+        updateProjectionsUI(parseFloat(wasteSlider.value));
+      } else {
+        updateTotalBurnDisplay();
+      }
     }
 
     const wasteSlider = document.getElementById('wasteSlider');
+
+    // Restore the last budget the user set, if any, so it survives a reload.
+    const savedSliderValue = localStorage.getItem('subZeroSliderBudget');
+    if (savedSliderValue !== null) {
+      wasteSlider.value = savedSliderValue;
+      document.getElementById('sliderValueDisplay').innerText = `$${savedSliderValue}`;
+    }
+
     wasteSlider.addEventListener('input', (e) => {
-      document.getElementById('sliderValueDisplay').innerText = `$${e.target.value}`;
+      const value = e.target.value;
+      document.getElementById('sliderValueDisplay').innerText = `$${value}`;
+
+      // Persist it so it's remembered next time this page loads.
+      localStorage.setItem('subZeroSliderBudget', value);
+
+      // Update the graph live as the slider moves, treating whatever it's
+      // set to as the monthly amount being redirected into TRBCX.
+      updateProjectionsUI(parseFloat(value));
     });
 
     async function fetchLeaderboard() {
@@ -447,12 +471,20 @@
       document.getElementById('totalBurnDisplay').innerHTML = `$${currentPresetTotal.toFixed(2)}<span class="text-sm text-mist font-body">/mo</span>`;
 
       const investedAmount = Math.max(0, initialPresetTotal - currentPresetTotal);
-      document.getElementById('projSubtitleText').innerText = `$${investedAmount.toFixed(2)}`;
-      document.getElementById('btnInvestAmount').innerText = `$${investedAmount.toFixed(2)}`;
-      document.getElementById('proj5').innerText = '$' + Math.round(calculateCompound(investedAmount, 5)).toLocaleString();
-      document.getElementById('proj10').innerText = '$' + Math.round(calculateCompound(investedAmount, 10)).toLocaleString();
-      document.getElementById('proj20').innerText = '$' + Math.round(calculateCompound(investedAmount, 20)).toLocaleString();
-      updateChart(investedAmount);
+      updateProjectionsUI(investedAmount);
+    }
+
+    // Drives the T. Rowe Price projection card (subtitle, invest button,
+    // 5/10/20yr figures, and the chart) from a single monthly dollar amount.
+    // Preset mode feeds it the amount freed up by cancellations; Slider mode
+    // feeds it the slider's value directly, live as it moves.
+    function updateProjectionsUI(monthlyAmount) {
+      document.getElementById('projSubtitleText').innerText = `$${monthlyAmount.toFixed(2)}`;
+      document.getElementById('btnInvestAmount').innerText = `$${monthlyAmount.toFixed(2)}`;
+      document.getElementById('proj5').innerText = '$' + Math.round(calculateCompound(monthlyAmount, 5)).toLocaleString();
+      document.getElementById('proj10').innerText = '$' + Math.round(calculateCompound(monthlyAmount, 10)).toLocaleString();
+      document.getElementById('proj20').innerText = '$' + Math.round(calculateCompound(monthlyAmount, 20)).toLocaleString();
+      updateChart(monthlyAmount);
     }
 
     async function autoCancel(service, cost, index) {
@@ -616,7 +648,7 @@
       if (currentMode === 'preset') {
         targetName = currentActiveStudent.first_name || 'You';
         roastText = currentActiveStudent.ai_roast ||
-          `You are burning ${activeBurn.toFixed(2)} dollars a month on useless subscriptions while your bank account starves. Move it to TRBCX.`;
+          `You are burning ${Math.round(activeBurn)} dollars a month on useless subscriptions while your bank account starves. Move it to TRBCX.`;
 
         const isSuccess = currentPresetTotal <= 0.01;
         if (isSuccess) {
@@ -628,9 +660,9 @@
         // student's canned line.
         targetName = 'You';
         if (customVice) {
-          roastText = `If you keep blowing ${activeBurn.toFixed(2)} dollars a month on ${customVice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
+          roastText = `If you keep blowing ${Math.round(activeBurn)} dollars a month on ${customVice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
         } else {
-          roastText = `You're manually flagging ${activeBurn.toFixed(2)} dollars a month in useless spend. At least you're honest about it. Redirect that into TRBCX and let compound interest do the rest.`;
+          roastText = `You're manually flagging ${Math.round(activeBurn)} dollars a month in useless spend. At least you're honest about it. Redirect that into TRBCX and let compound interest do the rest.`;
         }
       }
 
