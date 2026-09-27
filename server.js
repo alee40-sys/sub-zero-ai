@@ -44,11 +44,10 @@ app.post('/api/roast', (req, res) => {
             selectedResponse = `If you keep blowing ${amount} dollars a month on ${vice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
         }
     } else {
-        // Pick a random student from mock_db.json
         const randomStudent = studentsDB[Math.floor(Math.random() * studentsDB.length)];
         console.log(`Pulled DB Record: ${randomStudent.first_name} (${randomStudent.major})`);
         selectedResponse = randomStudent.ai_roast;
-        studentData = randomStudent; // Pass the whole student object including their custom subscriptions
+        studentData = randomStudent;
     }
 
     res.json({ roast: selectedResponse, student: studentData });
