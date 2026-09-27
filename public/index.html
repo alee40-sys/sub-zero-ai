@@ -124,7 +124,6 @@
   <div id="plaidModal" class="fixed inset-0 z-50 flex items-center justify-center bg-void/80 backdrop-blur-md transition-opacity duration-300">
     <div class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(79,216,255,0.15)] relative overflow-hidden">
       
-      <!-- Header -->
       <div class="flex items-center justify-between mb-6">
         <div class="flex items-center gap-2 text-xs text-mist">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-ice">
@@ -139,7 +138,6 @@
       <h2 class="font-display text-2xl font-600 text-frost mb-2">Connect Your Bank</h2>
       <p class="text-xs text-mist mb-6">Select your financial institution to audit your subscription burn instantly.</p>
 
-      <!-- Bank Grid -->
       <div id="bankGrid" class="grid grid-cols-2 gap-3 mb-6">
         <button onclick="selectBank('Chase')" class="bank-card p-4 rounded-xl bg-surface2 border border-white/5 hover:border-ice/50 text-left transition-all flex items-center gap-3 group">
           <div class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 font-bold flex items-center justify-center text-xs">C</div>
@@ -159,13 +157,11 @@
         </button>
       </div>
 
-      <!-- Loading State -->
       <div id="plaidLoading" class="hidden text-center py-8">
         <div class="w-10 h-10 border-2 border-ice border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p class="font-display text-sm text-frost">Analyzing 90 days of tragic spending...</p>
       </div>
 
-      <!-- Connect Button -->
       <button id="connectStudentBtn" onclick="selectBank('Default Student')" class="w-full py-3 bg-gradient-to-r from-trowe to-[#08213b] hover:border-ice/60 border border-ice/30 text-white font-semibold text-xs rounded-xl shadow-lg transition-all">
         Connect Student Account
       </button>
@@ -198,7 +194,6 @@
         </div>
       </div>
 
-      <!-- Campus Waste Leaderboard Badge -->
       <div class="mt-3 bg-burn/10 border border-burn/30 px-4 py-2 rounded-xl text-center">
         <p class="text-[10px] text-burn font-bold uppercase tracking-widest">Campus Waste Leaderboard</p>
         <p class="font-display text-base text-white mt-0.5">UMBC students have burned <span id="leaderboardTotal"
@@ -209,10 +204,9 @@
     <!-- ============ MAIN TWO-COLUMN DASHBOARD GRID ============ -->
     <main class="pb-24 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-      <!-- LEFT COLUMN: Subscriptions, Toggles, & Roast AI Box (Width: 6 cols) -->
+      <!-- LEFT COLUMN: Subscriptions, Toggles, & Roast AI Box -->
       <div class="lg:col-span-6 space-y-4">
 
-        <!-- Input Toggle -->
         <div class="flex gap-2 bg-surface p-1 rounded-lg w-fit border border-white/10 mx-auto lg:mx-0">
           <button id="btnPreset" onclick="switchView('preset')"
             class="px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all">Common Subs</button>
@@ -220,11 +214,8 @@
             class="px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all">Custom Slider</button>
         </div>
 
-        <!-- Preset View -->
         <section id="presetView" class="block transition-opacity">
-          <div id="subscriptionList" class="glass rounded-2xl overflow-hidden">
-            <!-- Dynamically populated -->
-          </div>
+          <div id="subscriptionList" class="glass rounded-2xl overflow-hidden"></div>
           <div class="glass rounded-2xl mt-3 px-5 py-4 flex items-center justify-between">
             <p class="text-sm text-mist">Active monthly waste burn</p>
             <p id="totalBurnDisplay" class="num font-display text-2xl font-600 text-burn">$0.00<span
@@ -236,7 +227,6 @@
           </button>
         </section>
 
-        <!-- Slider View -->
         <section id="sliderView" class="hidden transition-opacity">
           <div class="glass rounded-2xl p-6 border border-white/[0.06]">
             <div class="flex items-baseline justify-between mb-4">
@@ -261,7 +251,6 @@
           </div>
         </section>
 
-        <!-- Analyze Spending CTA -->
         <section class="flex flex-col items-center text-center py-2">
           <button id="roastBtn" onclick="scanAndRoast(this)"
             class="sweep breathe relative overflow-hidden rounded-full px-8 py-4 bg-gradient-to-b from-trowe to-[#08213b] border border-ice/40 font-display text-base font-600 tracking-tight text-frost hover:border-ice/70 active:scale-[0.98] transition-all duration-150">
@@ -274,7 +263,6 @@
           </button>
         </section>
 
-        <!-- AI Verdict Response Box -->
         <section>
           <div class="glass rounded-2xl px-6 py-4 min-h-[90px]">
             <div class="flex items-center gap-2 mb-2 text-xs text-mist">
@@ -289,38 +277,32 @@
 
       </div>
 
-      <!-- RIGHT COLUMN: T. Rowe Price Growth Graph & Projection Card (Width: 6 cols) -->
-      <div class="lg:col-span-6">
-        <section id="projectionCard" class="sticky top-6">
+      <!-- RIGHT COLUMN: Growth Graph Hub & Rival Funds Selector -->
+      <div class="lg:col-span-6 space-y-4">
+        
+        <!-- Primary T. Rowe Price Fund Card -->
+        <section id="projectionCard">
           <div class="glass rounded-2xl p-6 border border-trowe/50 shadow-[0_0_30px_rgba(0,85,150,0.15)]">
             
             <div class="flex items-start justify-between mb-2">
               <div>
                 <div class="flex items-center gap-2">
-                  <h3 class="font-display text-xl font-600 text-frost">T. Rowe Price Blue Chip Growth Fund</h3>
+                  <h3 id="activeFundTitle" class="font-display text-xl font-600 text-frost">T. Rowe Price Blue Chip Growth Fund</h3>
                   
-                  <!-- Pulsating Tooltip Trigger -->
                   <div class="relative group cursor-pointer">
-                    <div class="w-5 h-5 rounded-full bg-ice/20 border border-ice/40 text-ice text-[11px] font-bold flex items-center justify-center breathe">
-                      ?
-                    </div>
-                    <!-- Sleek Dark-Mode Popover -->
+                    <div class="w-5 h-5 rounded-full bg-ice/20 border border-ice/40 text-ice text-[11px] font-bold flex items-center justify-center breathe">?</div>
                     <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-64 p-3 rounded-xl bg-surface2 border border-ice/30 shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-30 text-xs leading-relaxed text-[#4FD8FF]">
-                      Why this fund? TRBCX targets large, well-established companies with above-average earnings growth. Perfect for long-term compound interest while you finish your degree.
+                      Why this fund? Targets high-performing equities for maximized long-term compound growth.
                     </div>
                   </div>
-
                 </div>
-                <p class="text-xs text-mist mt-1">Ticker: <strong>TRBCX</strong> | Redirecting <span
-                    id="projSubtitleText">$0.00</span>/mo into the market.</p>
+                <p class="text-xs text-mist mt-1"><span id="activeTicker">Ticker: TRBCX</span> | Redirecting <span id="projSubtitleText">$0.00</span>/mo into the market.</p>
               </div>
-              <span
-                class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded bg-trowe/20 text-[#4FD8FF] border border-trowe/40">11.79%
-                Historical APY</span>
+              <span id="activeApyBadge" class="text-[10px] uppercase tracking-wider font-semibold px-2 py-1 rounded bg-trowe/20 text-[#4FD8FF] border border-trowe/40">11.79% APY</span>
             </div>
 
             <!-- Chart.js Canvas -->
-            <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48 relative" style="height: 220px; min-height: 220px;">
+            <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 relative" style="height: 200px; min-height: 200px;">
               <canvas id="growthChart"></canvas>
               <div id="chartTooltip"
                 class="hidden absolute z-20 pointer-events-none bg-[#0B121A] border border-white/10 rounded-xl px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.55)]"
@@ -332,46 +314,77 @@
             </div>
 
             <!-- Data Points -->
-            <div class="grid grid-cols-3 gap-3 text-center mt-4 mb-5">
-              <div class="bg-surface p-3 rounded-xl border border-white/5">
-                <p class="text-xs text-mist mb-1">5 Years</p>
-                <p id="proj5" class="font-display text-lg font-bold text-frost num">$0</p>
+            <div class="grid grid-cols-3 gap-3 text-center mt-4 mb-4">
+              <div class="bg-surface p-2.5 rounded-xl border border-white/5">
+                <p class="text-[11px] text-mist mb-1">5 Years</p>
+                <p id="proj5" class="font-display text-base font-bold text-frost num">$0</p>
               </div>
-              <div class="bg-surface p-3 rounded-xl border border-trowe/40 relative overflow-hidden">
+              <div class="bg-surface p-2.5 rounded-xl border border-trowe/40 relative overflow-hidden">
                 <div class="absolute inset-0 bg-trowe/10"></div>
-                <p class="text-xs text-[#4FD8FF] mb-1 relative z-10">10 Years</p>
-                <p id="proj10" class="font-display text-xl font-bold text-white num relative z-10">$0</p>
+                <p class="text-[11px] text-[#4FD8FF] mb-1 relative z-10">10 Years</p>
+                <p id="proj10" class="font-display text-lg font-bold text-white num relative z-10">$0</p>
               </div>
-              <div class="bg-surface p-3 rounded-xl border border-white/5">
-                <p class="text-xs text-mist mb-1">20 Years</p>
-                <p id="proj20" class="font-display text-lg font-bold text-frost num">$0</p>
+              <div class="bg-surface p-2.5 rounded-xl border border-white/5">
+                <p class="text-[11px] text-mist mb-1">20 Years</p>
+                <p id="proj20" class="font-display text-base font-bold text-frost num">$0</p>
               </div>
             </div>
 
-            <!-- Simulated Action Button -->
             <button id="investBtn" onclick="simulateInvestment()"
-              class="w-full py-3 rounded-lg bg-trowe hover:bg-blue-600 text-white font-semibold text-sm transition-colors shadow-lg">
+              class="w-full py-2.5 rounded-lg bg-trowe hover:bg-blue-600 text-white font-semibold text-xs transition-colors shadow-lg">
               Open Account with <span id="btnInvestAmount">$0.00</span>
             </button>
 
-            <!-- Contact Info Reveal -->
-            <div id="contactReveal"
-              class="hidden mt-4 text-center p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
-              <p class="text-sm text-green-400 font-semibold mb-1">✓ Application Initialized</p>
-              <p class="text-xs text-mist">Redirecting to T. Rowe Price Student Onboarding portal...</p>
-              <p class="text-[10px] text-mist/60 mt-3 border-t border-white/5 pt-2">UMBC Hackathon Prototype — Sub-Zero AI
-              </p>
+            <div id="contactReveal" class="hidden mt-3 text-center p-3 bg-green-900/20 border border-green-500/30 rounded-lg">
+              <p class="text-xs text-green-400 font-semibold mb-0.5">✓ Application Initialized</p>
+              <p class="text-[11px] text-mist">Redirecting to Student Onboarding portal...</p>
             </div>
 
           </div>
         </section>
+
+        <!-- Rival Competitors Selection Hub -->
+        <div class="glass rounded-2xl p-4 border border-white/10">
+          <p class="text-[11px] text-mist font-bold uppercase tracking-wider mb-3">Compare Rival Competitor Funds</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="setFund('trowe', 0.1179, 'T. Rowe Price Blue Chip Growth Fund', 'TRBCX')" class="p-2.5 rounded-xl bg-trowe/20 border border-trowe/40 text-left transition-all hover:bg-trowe/30">
+              <p class="text-xs font-bold text-frost">T. Rowe Price</p>
+              <p class="text-[10px] text-ice mt-0.5">11.79% APY</p>
+            </button>
+            <button onclick="setFund('vanguard', 0.105, 'Vanguard S&P 500 Index ETF', 'VOO')" class="p-2.5 rounded-xl bg-surface2 border border-white/5 text-left transition-all hover:border-ice/30">
+              <p class="text-xs font-bold text-frost">Vanguard</p>
+              <p class="text-[10px] text-mist mt-0.5">10.50% APY</p>
+            </button>
+            <button onclick="setFund('fidelity', 0.121, 'Fidelity Growth Company Fund', 'FDGRX')" class="p-2.5 rounded-xl bg-surface2 border border-white/5 text-left transition-all hover:border-ice/30">
+              <p class="text-xs font-bold text-frost">Fidelity</p>
+              <p class="text-[10px] text-ice mt-0.5">12.10% APY</p>
+            </button>
+          </div>
+        </div>
+
       </div>
 
     </main>
   </div>
 
   <script>
-    // ================= PLAID MODAL HELPER =================
+    let currentAPY = 0.1179;
+    let activeFundName = "T. Rowe Price Blue Chip Growth Fund";
+    let activeTickerCode = "TRBCX";
+
+    function setFund(key, apy, name, ticker) {
+      currentAPY = apy;
+      activeFundName = name;
+      activeTickerCode = ticker;
+
+      document.getElementById('activeFundTitle').innerText = name;
+      document.getElementById('activeTicker').innerText = `Ticker: ${ticker}`;
+      document.getElementById('activeApyBadge').innerText = `${(apy * 100).toFixed(2)}% APY`;
+
+      const investedAmount = currentMode === 'preset' ? (initialPresetTotal - currentPresetTotal) : parseFloat(wasteSlider.value);
+      updateProjectionsUI(Math.max(0, investedAmount));
+    }
+
     function selectBank(bankName) {
       document.getElementById('bankGrid').classList.add('hidden');
       document.getElementById('connectStudentBtn').classList.add('hidden');
@@ -384,7 +397,6 @@
       }, 2000);
     }
 
-    // ================= PLUGINS DECLARED FIRST =================
     const crosshairPlugin = {
       id: 'crosshair',
       afterDraw(chart) {
@@ -445,7 +457,6 @@
       }
     }
 
-    // ================= STATE & VIEW TOGGLE =================
     let currentMode = 'preset';
     let growthChart = null;
     let isScanning = false;
@@ -459,7 +470,7 @@
     ];
 
     let currentStudentSubs = JSON.parse(JSON.stringify(defaultSubs));
-    let currentActiveStudent = { first_name: "You", ai_roast: "You are burning money on useless subscriptions while your bank account starves. Move it to TRBCX." };
+    let currentActiveStudent = { first_name: "You", ai_roast: "You are burning money on useless subscriptions while your bank account starves. Move it to active growth funds." };
 
     function switchView(view) {
       currentMode = view;
@@ -482,7 +493,6 @@
     }
 
     const wasteSlider = document.getElementById('wasteSlider');
-
     const savedSliderValue = localStorage.getItem('subZeroSliderBudget');
     if (savedSliderValue !== null) {
       wasteSlider.value = savedSliderValue;
@@ -619,6 +629,38 @@
 
         updateTotalBurnDisplay();
         fetchLeaderboard();
+
+        const roastBox = document.getElementById('roastBox');
+        const successLines = [
+          "Nice, you're actually thinking for once.",
+          "Look at that, you've finally stopped throwing money away.",
+          "Character development! Your bank account is proud of you.",
+          "Subscription canceled. Your wallet just took a deep breath.",
+          "Boom. One less monthly charge haunting your bank account."
+        ];
+        const chosenLine = successLines[Math.floor(Math.random() * successLines.length)];
+        
+        document.getElementById('verdictTitle').innerText = "Sub‑Zero AI — Audit Success";
+        roastBox.innerHTML = `"${chosenLine}"`;
+
+        try {
+          const audioRes = await fetch('/api/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: chosenLine })
+          });
+
+          if (audioRes.ok) {
+            const blob = await audioRes.blob();
+            const audio = new Audio(URL.createObjectURL(blob));
+            await audio.play();
+          } else {
+            speakWithBrowser(chosenLine);
+          }
+        } catch (audioErr) {
+          speakWithBrowser(chosenLine);
+        }
+
       } catch (err) {
         btnElement.innerText = "Canceled";
         currentStudentSubs[index].canceled = true;
@@ -660,7 +702,7 @@
     updateChart(0);
 
     function calculateCompound(monthlyDeposit, years) {
-      const r = 0.1179, n = 12, t = years;
+      const r = currentAPY, n = 12, t = years;
       const fv = monthlyDeposit * (((Math.pow(1 + r / n, n * t)) - 1) / (r / n));
       return fv;
     }
@@ -762,19 +804,18 @@
 
       if (currentMode === 'preset') {
         targetName = currentActiveStudent.first_name || 'You';
-        roastText = currentActiveStudent.ai_roast ||
-          `You are burning ${Math.round(activeBurn)} dollars a month on useless subscriptions while your bank account starves. Move it to TRBCX.`;
-
-        const isSuccess = currentPresetTotal <= 0.01;
-        if (isSuccess) {
-          roastText = `System anomaly detected. You actually canceled your dead weight. You are officially in the top five percent of financially literate students. Let's get that money into T. Rowe Price.`;
+        
+        if (currentPresetTotal <= 0.01) {
+          roastText = "Zero waste detected. You've officially cut all the dead weight out of your budget. Time to let compound interest do its magic.";
+        } else {
+          roastText = currentActiveStudent.ai_roast || `You are burning ${Math.round(activeBurn)} dollars a month on useless subscriptions.`;
         }
       } else {
         targetName = 'You';
         if (customVice) {
-          roastText = `If you keep blowing ${Math.round(activeBurn)} dollars a month on ${customVice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
+          roastText = `If you keep blowing ${Math.round(activeBurn)} dollars a month on ${customVice}, your retirement plan is just hoping you find cash in the woods.`;
         } else {
-          roastText = `You're manually flagging ${Math.round(activeBurn)} dollars a month in useless spend. At least you're honest about it. Redirect that into TRBCX and let compound interest do the rest.`;
+          roastText = `You're flagging ${Math.round(activeBurn)} dollars a month in useless spend. Redirect that into ${activeFundName} and let compound interest work.`;
         }
       }
 
