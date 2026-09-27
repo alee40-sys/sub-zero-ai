@@ -146,12 +146,9 @@
           </div>
         </div>
 
-        <!-- Health Score Badge -->
-        <div class="flex items-center gap-3 bg-surface px-4 py-2 rounded-xl border border-white/10">
-          <div class="text-right">
-            <p class="text-[10px] text-mist uppercase tracking-wider font-semibold">Health Score</p>
-            <p id="healthScoreDisplay" class="font-display text-lg font-bold text-burn num">45 / 100</p>
-          </div>
+        <div class="hidden sm:flex items-center gap-2 text-xs text-mist">
+          <span class="w-1.5 h-1.5 rounded-full bg-ice shadow-[0_0_8px_rgba(79,216,255,0.9)]"></span>
+          T. Rowe Price Track
         </div>
       </div>
 
@@ -324,7 +321,6 @@
 
     let currentStudentSubs = JSON.parse(JSON.stringify(defaultSubs));
     let currentActiveStudent = { first_name: "You", ai_roast: "You are burning money on useless subscriptions while your bank account starves. Move it to TRBCX." };
-    let healthScore = 100;
 
     function switchView(view) {
       currentMode = view;
@@ -339,8 +335,6 @@
         ? 'px-4 py-1.5 text-xs rounded bg-ice/20 text-ice font-semibold transition-all'
         : 'px-4 py-1.5 text-xs rounded text-mist hover:text-frost transition-all';
 
-      // Make sure the graph reflects whichever mode we just switched into,
-      // instead of showing stale numbers from the other mode.
       if (view === 'slider') {
         updateProjectionsUI(parseFloat(wasteSlider.value));
       } else {
@@ -350,7 +344,6 @@
 
     const wasteSlider = document.getElementById('wasteSlider');
 
-    // Restore the last budget the user set, if any, so it survives a reload.
     const savedSliderValue = localStorage.getItem('subZeroSliderBudget');
     if (savedSliderValue !== null) {
       wasteSlider.value = savedSliderValue;
@@ -360,12 +353,7 @@
     wasteSlider.addEventListener('input', (e) => {
       const value = e.target.value;
       document.getElementById('sliderValueDisplay').innerText = `$${value}`;
-
-      // Persist it so it's remembered next time this page loads.
       localStorage.setItem('subZeroSliderBudget', value);
-
-      // Update the graph live as the slider moves, treating whatever it's
-      // set to as the monthly amount being redirected into TRBCX.
       updateProjectionsUI(parseFloat(value));
     });
 
@@ -400,24 +388,9 @@
       }
     }
 
-    // ================= HEALTH SCORE CALCULATION =================
-    // Starts at 100 and takes a hit for every subscription that's WASTE or
-    // WARNING, so a bad subscription profile actually shows up as unhealthy
-    // instead of always reading 100/100.
-    function computeHealthScore(subs) {
-      let score = 100;
-      subs.forEach(sub => {
-        const evalResult = evaluateSubscription(sub);
-        if (evalResult.status === "WASTE") score -= 15;
-        else if (evalResult.status === "WARNING") score -= 5;
-      });
-      return Math.max(0, score);
-    }
-
     // ================= RENDER SUBSCRIPTIONS =================
     function renderSubscriptions(subs) {
       currentStudentSubs = JSON.parse(JSON.stringify(subs));
-      healthScore = computeHealthScore(currentStudentSubs);
 
       currentPresetTotal = currentStudentSubs.reduce((sum, sub) => {
         const evalResult = evaluateSubscription(sub);
@@ -430,8 +403,6 @@
         const countsAsBurn = evalResult.status === "WASTE" || evalResult.status === "WARNING";
         return countsAsBurn ? sum + sub.monthly_cost : sum;
       }, 0);
-
-      updateHealthScoreUI();
 
       const container = document.getElementById('subscriptionList');
       container.innerHTML = '';
@@ -467,12 +438,6 @@
       updateTotalBurnDisplay();
     }
 
-    function updateHealthScoreUI() {
-      const display = document.getElementById('healthScoreDisplay');
-      display.innerText = `${healthScore} / 100`;
-      display.className = `font-display text-lg font-bold num ${healthScore > 70 ? 'text-green-400' : healthScore > 40 ? 'text-yellow-400' : 'text-burn'}`;
-    }
-
     function updateTotalBurnDisplay() {
       currentPresetTotal = Math.max(0, currentPresetTotal);
       document.getElementById('totalBurnDisplay').innerHTML = `$${currentPresetTotal.toFixed(2)}<span class="text-sm text-mist font-body">/mo</span>`;
@@ -481,10 +446,6 @@
       updateProjectionsUI(investedAmount);
     }
 
-    // Drives the T. Rowe Price projection card (subtitle, invest button,
-    // 5/10/20yr figures, and the chart) from a single monthly dollar amount.
-    // Preset mode feeds it the amount freed up by cancellations; Slider mode
-    // feeds it the slider's value directly, live as it moves.
     function updateProjectionsUI(monthlyAmount) {
       document.getElementById('projSubtitleText').innerText = `$${monthlyAmount.toFixed(2)}`;
       document.getElementById('btnInvestAmount').innerText = `$${monthlyAmount.toFixed(2)}`;
@@ -515,31 +476,19 @@
         currentStudentSubs[index].canceled = true;
 
         const evalResult = evaluateSubscription(currentStudentSubs[index]);
-        if (evalResult.status === "WASTE") {
+        if (evalResult.status === "WASTE" || evalResult.status === "WARNING") {
           currentPresetTotal -= cost;
-          healthScore = Math.min(100, healthScore + 15);
-        } else if (evalResult.status === "WARNING") {
-          currentPresetTotal -= cost;
-          healthScore = Math.min(100, healthScore + 5);
         }
 
-        updateHealthScoreUI();
         updateTotalBurnDisplay();
         fetchLeaderboard();
       } catch (err) {
         btnElement.innerText = "Canceled";
         currentStudentSubs[index].canceled = true;
-
         const evalResult = evaluateSubscription(currentStudentSubs[index]);
-        if (evalResult.status === "WASTE") {
+        if (evalResult.status === "WASTE" || evalResult.status === "WARNING") {
           currentPresetTotal -= cost;
-          healthScore = Math.min(100, healthScore + 15);
-        } else if (evalResult.status === "WARNING") {
-          currentPresetTotal -= cost;
-          healthScore = Math.min(100, healthScore + 5);
         }
-
-        updateHealthScoreUI();
         updateTotalBurnDisplay();
       }
     }
@@ -595,7 +544,6 @@
           ctx.stroke();
           ctx.restore();
         } catch (e) {
-          // Never let a crosshair-drawing hiccup take down the whole chart.
           console.warn('crosshair plugin skipped a frame:', e);
         }
       }
@@ -621,8 +569,6 @@
 
         tooltipEl.classList.remove('hidden');
 
-        // Position it beside the hovered point, flipping to the left side
-        // near the right edge so it never spills outside the card.
         const tooltipWidth = tooltipEl.offsetWidth || 150;
         let left = chart.canvas.offsetLeft + tooltip.caretX + 14;
         if (left + tooltipWidth > wrapper.clientWidth) {
@@ -634,7 +580,6 @@
         tooltipEl.style.left = left + 'px';
         tooltipEl.style.top = top + 'px';
       } catch (e) {
-        // Never let a tooltip-positioning hiccup take down the whole chart.
         console.warn('chart tooltip skipped a frame:', e);
       }
     }
@@ -647,12 +592,17 @@
     }
 
     function updateChart(monthlyAmount) {
-      const ctx = document.getElementById('growthChart').getContext('2d');
-      const years = Array.from({ length: 21 }, (_, i) => i); // Now, 1y ... 20y
+      const canvas = document.getElementById('growthChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      const ctx = canvas.getContext('2d');
+      
+      const years = Array.from({ length: 21 }, (_, i) => i);
       const dataPoints = years.map(year => calculateCompound(monthlyAmount, year));
       const labels = years.map(y => y === 0 ? 'Now' : `${y}y`);
 
-      if (growthChart) growthChart.destroy();
+      if (growthChart) {
+        growthChart.destroy();
+      }
 
       growthChart = new Chart(ctx, {
         type: 'line',
@@ -739,9 +689,6 @@
           roastText = `System anomaly detected. You actually canceled your dead weight. You are officially in the top five percent of financially literate students. Let's get that money into T. Rowe Price.`;
         }
       } else {
-        // Custom Slider mode: always build the roast from the live slider
-        // value (and vice text, if any) — never fall back to a preset
-        // student's canned line.
         targetName = 'You';
         if (customVice) {
           roastText = `If you keep blowing ${Math.round(activeBurn)} dollars a month on ${customVice}, your retirement plan is just hoping you find a bag of cash in the woods.`;
