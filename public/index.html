@@ -258,8 +258,15 @@
           </div>
 
           <!-- Chart.js Canvas -->
-          <div class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48">
+          <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48 relative">
             <canvas id="growthChart"></canvas>
+            <div id="chartTooltip"
+              class="hidden absolute z-20 pointer-events-none bg-[#0B121A] border border-white/10 rounded-xl px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.55)]"
+              style="min-width:150px;">
+              <p id="tooltipYearLabel" class="font-display text-sm font-600 text-frost">Year 0</p>
+              <p class="text-sm mt-1"><span class="text-mist">Projected : </span><span id="tooltipValueLabel"
+                  class="text-ice font-semibold">$0</span></p>
+            </div>
           </div>
 
           <!-- Data Points -->
@@ -567,6 +574,57 @@
     fetchNewStudent();
     updateChart(0);
 
+    // ================= CROSSHAIR + CUSTOM TOOLTIP =================
+    const crosshairPlugin = {
+      id: 'crosshair',
+      afterDraw(chart) {
+        const active = chart.getActiveElements();
+        if (!active || !active.length) return;
+        const { ctx, chartArea: { top, bottom } } = chart;
+        const x = active[0].element.x;
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(x, top);
+        ctx.lineTo(x, bottom);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+        ctx.stroke();
+        ctx.restore();
+      }
+    };
+
+    function externalTooltipHandler(context) {
+      const { chart, tooltip } = context;
+      const tooltipEl = document.getElementById('chartTooltip');
+      const wrapper = document.getElementById('chartWrapper');
+
+      if (!tooltip || tooltip.opacity === 0 || !tooltip.dataPoints || !tooltip.dataPoints.length) {
+        tooltipEl.classList.add('hidden');
+        return;
+      }
+
+      const dataPoint = tooltip.dataPoints[0];
+      const yearLabel = dataPoint.label === 'Now' ? 'Now' : `Year ${dataPoint.label.replace('y', '')}`;
+
+      document.getElementById('tooltipYearLabel').innerText = yearLabel;
+      document.getElementById('tooltipValueLabel').innerText = '$' + Math.round(dataPoint.parsed.y).toLocaleString();
+
+      tooltipEl.classList.remove('hidden');
+
+      // Position it beside the hovered point, flipping to the left side
+      // near the right edge so it never spills outside the card.
+      const tooltipWidth = tooltipEl.offsetWidth || 150;
+      let left = chart.canvas.offsetLeft + tooltip.caretX + 14;
+      if (left + tooltipWidth > wrapper.clientWidth) {
+        left = chart.canvas.offsetLeft + tooltip.caretX - tooltipWidth - 14;
+      }
+      let top = chart.canvas.offsetTop + tooltip.caretY - tooltipEl.offsetHeight / 2;
+      top = Math.max(4, Math.min(top, wrapper.clientHeight - tooltipEl.offsetHeight - 4));
+
+      tooltipEl.style.left = left + 'px';
+      tooltipEl.style.top = top + 'px';
+    }
+
     // ================= COMPOUND MATH & CHART =================
     function calculateCompound(monthlyDeposit, years) {
       const r = 0.1179, n = 12, t = years;
@@ -576,34 +634,46 @@
 
     function updateChart(monthlyAmount) {
       const ctx = document.getElementById('growthChart').getContext('2d');
-      const years = [0, 5, 10, 15, 20];
+      const years = Array.from({ length: 21 }, (_, i) => i); // Now, 1y ... 20y
       const dataPoints = years.map(year => calculateCompound(monthlyAmount, year));
+      const labels = years.map(y => y === 0 ? 'Now' : `${y}y`);
 
       if (growthChart) growthChart.destroy();
 
       growthChart = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: ['Now', 'Year 5', 'Year 10', 'Year 15', 'Year 20'],
+          labels: labels,
           datasets: [{
             label: 'Projected Wealth ($)',
             data: dataPoints,
             borderColor: '#4FD8FF',
-            backgroundColor: 'rgba(79, 216, 255, 0.1)',
+            backgroundColor: 'rgba(79, 216, 255, 0.12)',
             borderWidth: 2,
             fill: true,
-            tension: 0.4
+            tension: 0.4,
+            pointRadius: 0,
+            pointHitRadius: 12,
+            pointHoverRadius: 6,
+            pointHoverBackgroundColor: '#4FD8FF',
+            pointHoverBorderColor: '#ffffff',
+            pointHoverBorderWidth: 2
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false, external: externalTooltipHandler }
+          },
           scales: {
             y: { ticks: { color: '#8194A8', callback: (val) => '$' + val.toLocaleString() }, grid: { color: 'rgba(255,255,255,0.05)' } },
-            x: { ticks: { color: '#8194A8' }, grid: { display: false } }
+            x: { ticks: { color: '#8194A8', maxRotation: 0, autoSkip: true, autoSkipPadding: 8 }, grid: { display: false } }
           }
-        }
+        },
+        plugins: [crosshairPlugin]
       });
     }
 
