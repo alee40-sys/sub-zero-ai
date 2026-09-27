@@ -4,167 +4,83 @@
         "first_name": "Marcus",
         "major": "Computer Science",
         "subscriptions": [
-            {
-                "name": "iCloud Storage",
-                "monthly_cost": 0.99,
-                "hours_used_last_month": 700
-            },
-            {
-                "name": "Chegg Study",
-                "monthly_cost": 19.95,
-                "hours_used_last_month": 1
-            },
-            {
-                "name": "ChatGPT Plus",
-                "monthly_cost": 20.00,
-                "hours_used_last_month": 30
-            }
+            { "name": "iCloud Storage", "monthly_cost": 0.99, "hours_used_last_month": 700 },
+            { "name": "Chegg Study", "monthly_cost": 19.95, "hours_used_last_month": 1 },
+            { "name": "ChatGPT Plus", "monthly_cost": 20.00, "hours_used_last_month": 30 }
         ],
         "total_monthly_burn": 40.94,
-        "ai_roast": "Marcus, you're paying for two different AI tools just to struggle with Data Structures. Did you know if you put that forty dollars into T. Rowe Price every month instead, you'd have thousands sitting in your corner by graduation?"
+        "ai_roast": "Marcus, you pay $20 for ChatGPT and $20 for Chegg, but somehow the hardest question you still can't solve is 'Did I actually study?'"
     },
     {
         "id": "UMBC-002",
         "first_name": "Chloe",
         "major": "Business",
         "subscriptions": [
-            {
-                "name": "Google One",
-                "monthly_cost": 1.99,
-                "hours_used_last_month": 650
-            },
-            {
-                "name": "Equinox",
-                "monthly_cost": 200.00,
-                "hours_used_last_month": 0
-            },
-            {
-                "name": "Netflix",
-                "monthly_cost": 15.49,
-                "hours_used_last_month": 3
-            }
+            { "name": "Google One", "monthly_cost": 1.99, "hours_used_last_month": 650 },
+            { "name": "Equinox", "monthly_cost": 200.00, "hours_used_last_month": 0 },
+            { "name": "Netflix", "monthly_cost": 15.49, "hours_used_last_month": 3 }
         ],
         "total_monthly_burn": 217.48,
-        "ai_roast": "Chloe, a Business major ghosting a two-hundred-dollar gym membership is wild. By the way, redirecting that monthly burn into a T. Rowe Price growth fund would literally buy you a nice used car down the road."
+        "ai_roast": "Chloe, $200 for a gym you haven't entered once? That's not a membership. That's a charitable donation to people who actually work out."
     },
     {
         "id": "UMBC-003",
         "first_name": "Julian",
         "major": "Graphic Design",
         "subscriptions": [
-            {
-                "name": "Spotify Premium",
-                "monthly_cost": 11.99,
-                "hours_used_last_month": 40
-            }
+            { "name": "Spotify Premium", "monthly_cost": 11.99, "hours_used_last_month": 40 }
         ],
         "total_monthly_burn": 11.99,
-        "ai_roast": "Only one subscription? Look at you being financially responsible, Julian. Even so, dropping just this twelve dollars a month into T. Rowe Price adds up faster than you think over a few years."
+        "ai_roast": "Julian, only one subscription? Your bank account is so responsible it probably reminds your friends to split the Uber."
     },
     {
         "id": "UMBC-004",
         "first_name": "David",
         "major": "Mechanical Engineering",
         "subscriptions": [
-            {
-                "name": "iCloud Storage",
-                "monthly_cost": 0.99,
-                "hours_used_last_month": 600
-            },
-            {
-                "name": "Chegg Study",
-                "monthly_cost": 19.95,
-                "hours_used_last_month": 2
-            },
-            {
-                "name": "Tinder Gold",
-                "monthly_cost": 14.99,
-                "hours_used_last_month": 1
-            },
-            {
-                "name": "Crunchyroll",
-                "monthly_cost": 7.99,
-                "hours_used_last_month": 2
-            }
+            { "name": "iCloud Storage", "monthly_cost": 0.99, "hours_used_last_month": 600 },
+            { "name": "Chegg Study", "monthly_cost": 19.95, "hours_used_last_month": 2 },
+            { "name": "Tinder Gold", "monthly_cost": 14.99, "hours_used_last_month": 1 },
+            { "name": "Crunchyroll", "monthly_cost": 7.99, "hours_used_last_month": 2 }
         ],
         "total_monthly_burn": 43.92,
-        "ai_roast": "David's got four active subscriptions and zero dates. If you moved that forty-four dollars straight into T. Rowe Price, your future self would be thanking you big time."
+        "ai_roast": "David, you're paying for Tinder Gold, Chegg, and Crunchyroll. You're engineering everything except a reason for someone to text you back."
     },
     {
         "id": "UMBC-005",
         "first_name": "Aisha",
         "major": "Biology",
         "subscriptions": [
-            {
-                "name": "Planet Fitness",
-                "monthly_cost": 10.00,
-                "hours_used_last_month": 0
-            },
-            {
-                "name": "Netflix",
-                "monthly_cost": 15.49,
-                "hours_used_last_month": 4
-            }
+            { "name": "Planet Fitness", "monthly_cost": 10.00, "hours_used_last_month": 0 },
+            { "name": "Netflix", "monthly_cost": 15.49, "hours_used_last_month": 4 }
         ],
         "total_monthly_burn": 25.49,
-        "ai_roast": "Aisha, you're paying to ghost the gym and watch Netflix. Fun fact: sliding that twenty-five dollars a month into a T. Rowe Price fund lets compound interest do all the heavy lifting for you."
+        "ai_roast": "Aisha, Planet Fitness has a $10 membership and you've somehow found a way to make it $10 per workout. At zero workouts, that's impressive."
     },
     {
         "id": "UMBC-006",
         "first_name": "Tyler",
         "major": "Computer Science",
         "subscriptions": [
-            {
-                "name": "GitHub Copilot",
-                "monthly_cost": 10.00,
-                "hours_used_last_month": 45
-            },
-            {
-                "name": "YouTube Premium",
-                "monthly_cost": 13.99,
-                "hours_used_last_month": 50
-            },
-            {
-                "name": "Crunchyroll",
-                "monthly_cost": 7.99,
-                "hours_used_last_month": 2
-            },
-            {
-                "name": "Discord Nitro",
-                "monthly_cost": 9.99,
-                "hours_used_last_month": 60
-            },
-            {
-                "name": "DoorDash Pass",
-                "monthly_cost": 9.99,
-                "hours_used_last_month": 5
-            }
+            { "name": "GitHub Copilot", "monthly_cost": 10.00, "hours_used_last_month": 45 },
+            { "name": "YouTube Premium", "monthly_cost": 13.99, "hours_used_last_month": 50 },
+            { "name": "Crunchyroll", "monthly_cost": 7.99, "hours_used_last_month": 2 },
+            { "name": "Discord Nitro", "monthly_cost": 9.99, "hours_used_last_month": 60 },
+            { "name": "DoorDash Pass", "monthly_cost": 9.99, "hours_used_last_month": 5 }
         ],
         "total_monthly_burn": 51.96,
-        "ai_roast": "Tyler, five separate subscriptions is a masterpiece of chaos. But even with a heavy stack like this, routing it to T. Rowe Price turns fifty bucks a month into serious retirement fuel over time."
+        "ai_roast": "Tyler, you've got GitHub Copilot writing your code, Discord running your social life, and DoorDash delivering your food. At this point, you're basically a subscription."
     },
     {
         "id": "UMBC-007",
         "first_name": "Samantha",
         "major": "Business",
         "subscriptions": [
-            {
-                "name": "Uber Eats Pass",
-                "monthly_cost": 9.99,
-                "hours_used_last_month": 2
-            },
-            {
-                "name": "DraftKings",
-                "monthly_cost": 50.00,
-                "hours_used_last_month": 10
-            },
-            {
-                "name": "Apple Music",
-                "monthly_cost": 10.99,
-                "hours_used_last_month": 35
-            }
+            { "name": "Uber Eats Pass", "monthly_cost": 9.99, "hours_used_last_month": 2 },
+            { "name": "DraftKings", "monthly_cost": 50.00, "hours_used_last_month": 10 },
+            { "name": "Apple Music", "monthly_cost": 10.99, "hours_used_last_month": 35 }
         ],
         "total_monthly_burn": 70.98,
-        "ai_roast": "Samantha, betting on parlays isn't a business model. Did you know investing that seventy dollars monthly with T. Rowe Price instead gives you actual, reliable growth?"
+        "ai_roast": "Samantha, you're a Business major spending $50 a month on DraftKings. You're learning about investments, just exclusively the kind that disappear."
     }
 ]
