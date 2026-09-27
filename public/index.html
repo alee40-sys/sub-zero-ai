@@ -369,9 +369,24 @@
       }
     }
 
+    // ================= HEALTH SCORE CALCULATION =================
+    // Starts at 100 and takes a hit for every subscription that's WASTE or
+    // WARNING, so a bad subscription profile actually shows up as unhealthy
+    // instead of always reading 100/100.
+    function computeHealthScore(subs) {
+      let score = 100;
+      subs.forEach(sub => {
+        const evalResult = evaluateSubscription(sub);
+        if (evalResult.status === "WASTE") score -= 15;
+        else if (evalResult.status === "WARNING") score -= 5;
+      });
+      return Math.max(0, score);
+    }
+
     // ================= RENDER SUBSCRIPTIONS =================
     function renderSubscriptions(subs) {
       currentStudentSubs = JSON.parse(JSON.stringify(subs));
+      healthScore = computeHealthScore(currentStudentSubs);
 
       currentPresetTotal = currentStudentSubs.reduce((sum, sub) => {
         const evalResult = evaluateSubscription(sub);
@@ -480,7 +495,6 @@
     }
 
     function resetDemoState() {
-      healthScore = 100;
       fetchNewStudent();
       document.getElementById('roastBox').innerHTML = 'Waiting for financial data...';
       document.getElementById('verdictTitle').innerText = 'Sub‑Zero AI Verdict';
@@ -643,4 +657,4 @@
   </script>
 </body>
 
-</html> 
+</html>
