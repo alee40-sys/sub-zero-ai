@@ -127,6 +127,74 @@
 
 <body class="min-h-screen font-body text-frost antialiased">
 
+  <!-- ============ PLAID ONBOARDING MODAL ============ -->
+  <div id="plaidModal"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-void/80 backdrop-blur-md transition-opacity duration-300">
+    <div
+      class="glass w-full max-w-md p-8 rounded-3xl border border-white/10 shadow-[0_0_50px_rgba(79,216,255,0.15)] relative overflow-hidden">
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2 text-xs text-mist">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            class="text-ice">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Secure Connection · Plaid</span>
+        </div>
+        <span class="text-[10px] text-mist/60 uppercase tracking-widest font-mono">Sandbox Mode</span>
+      </div>
+
+      <h2 class="font-display text-2xl font-600 text-frost mb-2">Connect Your Bank</h2>
+      <p class="text-xs text-mist mb-6">Select your financial institution to audit your subscription burn instantly.</p>
+
+      <!-- Bank Grid -->
+      <div id="bankGrid" class="grid grid-cols-2 gap-3 mb-6">
+        <button onclick="selectBank('Chase')"
+          class="bank-card p-4 rounded-xl bg-surface2 border border-white/5 hover:border-ice/50 text-left transition-all flex items-center gap-3 group">
+          <div
+            class="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 font-bold flex items-center justify-center text-xs">C
+          </div>
+          <span class="text-sm font-medium text-frost group-hover:text-ice transition-colors">Chase</span>
+        </button>
+        <button onclick="selectBank('Bank of America')"
+          class="bank-card p-4 rounded-xl bg-surface2 border border-white/5 hover:border-ice/50 text-left transition-all flex items-center gap-3 group">
+          <div class="w-8 h-8 rounded-lg bg-red-600/20 text-red-400 font-bold flex items-center justify-center text-xs">
+            B</div>
+          <span class="text-sm font-medium text-frost group-hover:text-ice transition-colors">BofA</span>
+        </button>
+        <button onclick="selectBank('Wells Fargo')"
+          class="bank-card p-4 rounded-xl bg-surface2 border border-white/5 hover:border-ice/50 text-left transition-all flex items-center gap-3 group">
+          <div
+            class="w-8 h-8 rounded-lg bg-yellow-600/20 text-yellow-400 font-bold flex items-center justify-center text-xs">
+            W</div>
+          <span class="text-sm font-medium text-frost group-hover:text-ice transition-colors">Wells Fargo</span>
+        </button>
+        <button onclick="selectBank('Capital One')"
+          class="bank-card p-4 rounded-xl bg-surface2 border border-white/5 hover:border-ice/50 text-left transition-all flex items-center gap-3 group">
+          <div
+            class="w-8 h-8 rounded-lg bg-indigo-600/20 text-indigo-400 font-bold flex items-center justify-center text-xs">
+            C</div>
+          <span class="text-sm font-medium text-frost group-hover:text-ice transition-colors">Capital One</span>
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div id="plaidLoading" class="hidden text-center py-8">
+        <div class="w-10 h-10 border-2 border-ice border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+        <p class="font-display text-sm text-frost">Analyzing 90 days of tragic spending...</p>
+      </div>
+
+      <!-- Connect Button -->
+      <button id="connectStudentBtn" onclick="selectBank('Default Student')"
+        class="w-full py-3 bg-gradient-to-r from-trowe to-[#08213b] hover:border-ice/60 border border-ice/30 text-white font-semibold text-xs rounded-xl shadow-lg transition-all">
+        Connect Student Account
+      </button>
+
+    </div>
+  </div>
+
   <div class="frost-rule"></div>
 
   <div class="max-w-3xl mx-auto px-6">
@@ -243,9 +311,27 @@
       <!-- ============ T. ROWE PRICE PROJECTION CARD (VISIBLE & REAL-TIME) ============ -->
       <section id="projectionCard" class="mt-6 opacity-100 transition-all duration-500">
         <div class="glass rounded-2xl p-6 border border-trowe/50 shadow-[0_0_30px_rgba(0,85,150,0.15)]">
+
           <div class="flex items-start justify-between mb-2">
             <div>
-              <h3 class="font-display text-xl font-600 text-frost">T. Rowe Price Blue Chip Growth Fund</h3>
+              <div class="flex items-center gap-2">
+                <h3 class="font-display text-xl font-600 text-frost">T. Rowe Price Blue Chip Growth Fund</h3>
+
+                <!-- Pulsating Tooltip Trigger -->
+                <div class="relative group cursor-pointer">
+                  <div
+                    class="w-5 h-5 rounded-full bg-ice/20 border border-ice/40 text-ice text-[11px] font-bold flex items-center justify-center breathe">
+                    ?
+                  </div>
+                  <!-- Sleek Dark-Mode Popover -->
+                  <div
+                    class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden group-hover:block w-64 p-3 rounded-xl bg-surface2 border border-ice/30 shadow-[0_10px_30px_rgba(0,0,0,0.8)] z-30 text-xs leading-relaxed text-[#4FD8FF]">
+                    Why this fund? TRBCX targets large, well-established companies with above-average earnings growth.
+                    Perfect for long-term compound interest while you finish your degree.
+                  </div>
+                </div>
+
+              </div>
               <p class="text-xs text-mist mt-1">Ticker: <strong>TRBCX</strong> | Redirecting <span
                   id="projSubtitleText">$0.00</span>/mo into the market.</p>
             </div>
@@ -255,7 +341,8 @@
           </div>
 
           <!-- Chart.js Canvas -->
-          <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48 relative" style="height: 192px; min-height: 192px;">
+          <div id="chartWrapper" class="mt-4 bg-surface p-3 rounded-xl border border-white/5 h-48 relative"
+            style="height: 192px; min-height: 192px;">
             <canvas id="growthChart"></canvas>
             <div id="chartTooltip"
               class="hidden absolute z-20 pointer-events-none bg-[#0B121A] border border-white/10 rounded-xl px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.55)]"
@@ -305,7 +392,20 @@
   </div>
 
   <script>
-    // ================= PLUGINS DECLARED FIRST (Fixes ReferenceError) =================
+    // ================= PLAID MODAL HELPER =================
+    function selectBank(bankName) {
+      document.getElementById('bankGrid').classList.add('hidden');
+      document.getElementById('connectStudentBtn').classList.add('hidden');
+      document.getElementById('plaidLoading').classList.remove('hidden');
+
+      setTimeout(() => {
+        const modal = document.getElementById('plaidModal');
+        modal.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => modal.remove(), 300);
+      }, 2000);
+    }
+
+    // ================= PLUGINS DECLARED FIRST =================
     const crosshairPlugin = {
       id: 'crosshair',
       afterDraw(chart) {
@@ -373,7 +473,6 @@
     let currentPresetTotal = 0;
     let initialPresetTotal = 0;
 
-    // Default fallback subs
     let defaultSubs = [
       { name: "Netflix", monthly_cost: 15.49, hours_used_last_month: 3 },
       { name: "ChatGPT Plus", monthly_cost: 20.00, hours_used_last_month: 30 },
@@ -434,7 +533,6 @@
     }
     fetchLeaderboard();
 
-    // ================= COST-PER-HOUR HEURISTIC EVALUATION =================
     function evaluateSubscription(sub) {
       const hours = sub.hours_used_last_month !== undefined ? sub.hours_used_last_month : 1;
       const effectiveHours = hours === 0 ? 0.1 : hours;
@@ -449,7 +547,6 @@
       }
     }
 
-    // ================= RENDER SUBSCRIPTIONS =================
     function renderSubscriptions(subs) {
       currentStudentSubs = JSON.parse(JSON.stringify(subs));
 
@@ -580,11 +677,9 @@
       }
     }
 
-    // Initialize on load
     fetchNewStudent();
     updateChart(0);
 
-    // ================= COMPOUND MATH & CHART =================
     function calculateCompound(monthlyDeposit, years) {
       const r = 0.1179, n = 12, t = years;
       const fv = monthlyDeposit * (((Math.pow(1 + r / n, n * t)) - 1) / (r / n));
@@ -595,7 +690,7 @@
       const canvas = document.getElementById('growthChart');
       if (!canvas || typeof Chart === 'undefined') return;
       const ctx = canvas.getContext('2d');
-      
+
       const years = Array.from({ length: 21 }, (_, i) => i);
       const dataPoints = years.map(year => calculateCompound(monthlyAmount, year));
       const labels = years.map(y => y === 0 ? 'Now' : `${y}y`);
@@ -633,15 +728,15 @@
             tooltip: { enabled: false, external: externalTooltipHandler }
           },
           scales: {
-            y: { 
+            y: {
               min: 0,
               suggestedMax: 500,
-              ticks: { color: '#8194A8', callback: (val) => '$' + val.toLocaleString() }, 
-              grid: { color: 'rgba(255,255,255,0.05)' } 
+              ticks: { color: '#8194A8', callback: (val) => '$' + val.toLocaleString() },
+              grid: { color: 'rgba(255,255,255,0.05)' }
             },
-            x: { 
-              ticks: { color: '#8194A8', maxRotation: 0, autoSkip: true, autoSkipPadding: 8 }, 
-              grid: { display: false } 
+            x: {
+              ticks: { color: '#8194A8', maxRotation: 0, autoSkip: true, autoSkipPadding: 8 },
+              grid: { display: false }
             }
           }
         },
@@ -662,7 +757,6 @@
       window.speechSynthesis.speak(utterance);
     }
 
-    // ================= SCAN & ANALYZE =================
     async function scanAndRoast(btnElement) {
       if (isScanning) return;
       isScanning = true;
